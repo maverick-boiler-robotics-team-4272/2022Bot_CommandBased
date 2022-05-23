@@ -14,4 +14,7 @@ package frc.robot;
  */
 public final class Constants {
     public static final float CLIMBER_SOFTLIMIT = -305.0f;
+
+    public static final double JOYSTICK_DEADZONE = 0.15;
+    public static final double TRIGGER_DEADZONE = 0.1;
 }
