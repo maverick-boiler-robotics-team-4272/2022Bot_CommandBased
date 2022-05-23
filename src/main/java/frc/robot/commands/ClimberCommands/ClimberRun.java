@@ -5,7 +5,7 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Climber;
 
-public class ClimberRun extends CommandBase{
+public class ClimberRun extends CommandBase {
     private Climber m_subsystem;
     private DoubleSupplier m_leftAmount;
     private DoubleSupplier m_rightAmount;

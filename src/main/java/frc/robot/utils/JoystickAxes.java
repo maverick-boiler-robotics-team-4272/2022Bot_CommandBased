@@ -40,11 +40,35 @@ public class JoystickAxes extends Trigger {
         return Math.atan2(getRawYAxis(), getRawXAxis());
     }
 
+    /**
+     * 
+     * @return deadzoned x taking into acount circular deadzone
+     */
     public double getDeadzonedX(){
         return getDeadzonedMagnitude() * Math.cos(getAngle());
     }
 
+    /**
+     * 
+     * @return deadzoned y taking into acount circular deadzone
+     */
     public double getDeadzonedY(){
         return getDeadzonedMagnitude() * Math.sin(getAngle());
+    }
+
+    /**
+     * 
+     * @return deadzoned x, only x axis deadzoned
+     */
+    public double getRawDeadzonedX(){
+        return deadzoneEquations(getRawXAxis(), m_deadzone);
+    }
+
+    /**
+     * 
+     * @return deadzoned y, only y axis deadzoned
+     */
+    public double getRawDeadzonedY(){
+        return deadzoneEquations(getRawYAxis(), m_deadzone);
     }
 }
