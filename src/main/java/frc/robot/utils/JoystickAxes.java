@@ -6,10 +6,18 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.utils.Utils.deadzoneEquations;
 
 public class JoystickAxes extends Trigger {
+    enum DeadzoneMode{
+        MAGNITUDE,
+        X_AXIS,
+        Y_AXIS
+    }
+
     private GenericHID m_controller;
     private int m_xPort;
     private int m_yPort;
     private double m_deadzone;
+
+    private DeadzoneMode m_mode = DeadzoneMode.MAGNITUDE;
 
     public JoystickAxes(GenericHID controller, int xAxis, int yAxis, double deadzone){
         m_controller = controller;
@@ -28,7 +36,44 @@ public class JoystickAxes extends Trigger {
 
     @Override
     public boolean get(){
-        return getDeadzonedMagnitude() != 0;
+        double val;
+
+        switch(m_mode){
+            case MAGNITUDE:
+                val = getDeadzonedMagnitude();
+                break;
+            case X_AXIS:
+                val = getRawDeadzonedX();
+                break;
+            case Y_AXIS:
+                val = getRawDeadzonedY();
+                break;
+            default:
+                val = 0.0;
+                break;
+        }
+
+        return val != 0.0;
+    }
+
+    /**
+     * Sets the deadzoning mode for triggering the command
+     * 
+     * @param mode
+     * 
+     * @apiNote MAGNITUDE deadzones magnitude
+     * @apiNote X_AXIS deadzones soley the X axis
+     * @apiNote Y_AXIS deadzones soley the Y axis
+     */
+    public void setMode(DeadzoneMode mode) {
+        m_mode = mode;
+    }
+
+    /**
+     * @return Current deadzoning mode
+     */
+    public DeadzoneMode getMode(){
+        return m_mode;
     }
 
     public double getDeadzonedMagnitude(){

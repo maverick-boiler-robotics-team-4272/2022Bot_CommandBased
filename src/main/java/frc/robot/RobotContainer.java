@@ -72,6 +72,7 @@ public class RobotContainer {
 
     private JoystickAxes m_operatorLeftJoystick = joystickAxes(m_operatorController, kLeftX, kLeftY);
     private JoystickAxes m_operatorRightJoystick = joystickAxes(m_operatorController, kRightX, kRightY);
+    
     // The robot's subsystems and commands are defined here...
 
     /**
