@@ -24,7 +24,7 @@ public class ClimberRun extends CommandBase {
     }
 
     @Override
-    public void end(boolean interrupted){
-        m_subsystem.runClimbers(0.0, 0.0);
+    public boolean isFinished(){
+        return false;
     }
 }
