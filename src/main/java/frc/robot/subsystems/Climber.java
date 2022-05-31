@@ -43,7 +43,7 @@ public class Climber extends SubsystemBase {
         m_rightMotor.getEncoder().setPosition(0.0);
     }
 
-    public void toggleClimber(){
+    public void togglePneumatics(){
         m_solenoid.toggle();
     }
 }

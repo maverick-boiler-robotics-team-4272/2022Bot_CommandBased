@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.ClimberCommands.ClimberRun;
+import frc.robot.subsystems.Climber;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
 import frc.robot.utils.Utils;
+import frc.robot.utils.JoystickAxes.DeadzoneMode;
 
 import static edu.wpi.first.wpilibj.XboxController.Button.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
@@ -74,7 +77,7 @@ public class RobotContainer {
     private JoystickAxes m_operatorRightJoystick = joystickAxes(m_operatorController, kRightX, kRightY);
     
     // The robot's subsystems and commands are defined here...
-
+    Climber m_climber = new Climber();
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -92,7 +95,11 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-
+        m_operatorLeftJoystick.setMode(DeadzoneMode.Y_AXIS);
+        m_operatorRightJoystick.setMode(DeadzoneMode.Y_AXIS);
+        m_operatorLeftJoystick.or(m_operatorRightJoystick).whileActiveContinuous(new ClimberRun(m_climber, m_operatorLeftJoystick::getRawDeadzonedY, m_operatorRightJoystick::getRawDeadzonedY));
+        m_operatorYButton.whenPressed(new InstantCommand(m_climber::togglePneumatics, m_climber));
+        m_operatorLeftBumper.whenPressed(new InstantCommand(m_climber::removeSoftLimits, m_climber)).whenReleased(new InstantCommand(m_climber::reapplySoftLimits, m_climber));
     }
 
     /**
