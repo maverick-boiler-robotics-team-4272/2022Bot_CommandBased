@@ -2,14 +2,13 @@ package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.wpilibj.XboxController.Button.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 import static frc.robot.Constants.*;
 
-public class Controller {
-    public enum Triggers {
+public class XBoxController {
+    public enum Buttons {
         A_BUTTON,
         B_BUTTON,
         X_BUTTON,
@@ -22,11 +21,15 @@ public class Controller {
         RIGHT_BUMPER,
 
         LEFT_STICK_CLICK,
-        RIGHT_STICK_CLICK,
+        RIGHT_STICK_CLICK
+    }
 
+    public enum Triggers {
         LEFT_TRIGGER,
-        RIGHT_TRIGGER,
+        RIGHT_TRIGGER
+    }
 
+    public enum Axes {
         LEFT_STICK,
         RIGHT_STICK
     }
@@ -52,7 +55,7 @@ public class Controller {
 
     private JoystickAxes m_leftStick;
     private JoystickAxes m_rightStick;
-    public Controller(int port){
+    public XBoxController(int port){
         m_controller = new XboxController(port);
 
         m_aButton = new JoystickButton(m_controller, kA.value);
@@ -76,8 +79,8 @@ public class Controller {
         m_rightStick = new JoystickAxes(m_controller, kRightX.value, kRightY.value, JOYSTICK_DEADZONE);
     }
 
-    public Trigger getTrigger(Triggers trigger){
-        switch(trigger){
+    public JoystickButton getButton(Buttons button){
+        switch(button){
             case A_BUTTON:
                 return m_aButton;
             case B_BUTTON:
@@ -98,10 +101,24 @@ public class Controller {
                 return m_leftClick;
             case RIGHT_STICK_CLICK:
                 return m_rightClick;
+            default:
+                return null;
+        }
+    }
+
+    public JoystickTrigger getTrigger(Triggers trigger){
+        switch(trigger){
             case LEFT_TRIGGER:
                 return m_leftTrigger;
             case RIGHT_TRIGGER:
                 return m_rightTrigger;
+            default:
+                return null;
+        }
+    }
+
+    public JoystickAxes getAxis(Axes axis){
+        switch(axis){
             case LEFT_STICK:
                 return m_leftStick;
             case RIGHT_STICK:
