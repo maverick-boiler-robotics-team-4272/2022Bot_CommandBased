@@ -17,4 +17,6 @@ public final class Constants {
 
     public static final double JOYSTICK_DEADZONE = 0.15;
     public static final double TRIGGER_DEADZONE = 0.1;
+
+    public static final double PI2 = Math.PI * 2;
 }

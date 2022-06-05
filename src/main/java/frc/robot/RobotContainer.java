@@ -13,10 +13,10 @@ import frc.robot.subsystems.Climber;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
+
 import frc.robot.utils.JoystickAxes.DeadzoneMode;
 import frc.robot.utils.XBoxController.Axes;
 import frc.robot.utils.XBoxController.Buttons;
-import static frc.robot.Constants.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
