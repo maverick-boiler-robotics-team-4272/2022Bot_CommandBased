@@ -30,7 +30,7 @@ public class SwerveModule {
 
     /**
      * 
-     * @param moduleID - module id. 1 is front right, 2 is front left, 3 is back left, 4 is back right
+     * @param moduleID - module id. 1 is front left, 2 is front right, 3 is back left, 4 is back right
      * @param offset - readout from encoder when the module is at 0
      * @param flipped - whether the encoder is upside-down
      */
