@@ -28,6 +28,12 @@ public class SwerveModule {
     private CANCoder m_externalRotationEncoder;
     private double m_flipped;
 
+    /**
+     * 
+     * @param moduleID - module id. 1 is front right, 2 is front left, 3 is back left, 4 is back right
+     * @param offset - readout from encoder when the module is at 0
+     * @param flipped - whether the encoder is upside-down
+     */
     public SwerveModule(int moduleID, double offset, boolean flipped){
         m_driveMotor = new CANSparkMax(moduleID, MotorType.kBrushless);
         m_driveEncoder = m_driveMotor.getEncoder();
@@ -37,12 +43,15 @@ public class SwerveModule {
         m_rotationPidController = m_rotationMotor.getPIDController();
         m_offset = offset;
         m_externalRotationEncoder = new CANCoder(moduleID + 20);
-        m_flipped = flipped ? -1.0 : 1.0;
+        m_flipped = flipped ? 1.0 : -1.0;
         init();
     }
 
+    /**
+     * Initialization method for the swerve module
+     */
     private void init(){
-        //360.0 is the amount of degrees in a circle. Useful, because
+        //360.0 is the amount of degrees in a circle. This is useful, because
         //all our rotation math is done in degrees
         m_rotationEncoder.setPositionConversionFactor(360.0 / STEER_RATIO);
         
@@ -53,14 +62,29 @@ public class SwerveModule {
         m_rotationEncoder.setPosition(m_flipped * current);
     }
 
+    /**
+     * 
+     * @return offset of the module
+     */
     public double getOffset() {
         return m_offset;
     }
 
+    /**
+     * 
+     * @return angle that the module is at
+     */
     public Rotation2d getHeading(){
         return Rotation2d.fromDegrees(m_rotationEncoder.getPosition());
     }
 
+    /**
+     * Sets the rotation and speed of the module. Automatically handles all
+     * continuous math for direction to ensure the module never rotates more
+     * than 90 degrees. Also ensures that if the module isn't driving anywhere,
+     * don't rotate the module
+     * @param desiredState desired state for the module
+     */
     public void setState(SwerveModuleState desiredState){
         SwerveModuleState state = optimize(desiredState, getHeading());
 
@@ -71,6 +95,20 @@ public class SwerveModule {
         }
     }
 
+    /**
+     * 
+     * @return Current state of the module
+     */
+    public SwerveModuleState getState(){
+        return new SwerveModuleState(m_driveEncoder.getVelocity(), getHeading());
+    }
+
+    /**
+     * Optimize function that automatically handles continuous math for setting the state
+     * @param desiredState where you want the module to be
+     * @param currentAngle what direction the module is facing
+     * @return optimized module state
+     */
     private static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
         boolean inverted = false;
 
