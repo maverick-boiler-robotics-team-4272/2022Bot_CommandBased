@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -34,5 +35,48 @@ public class Drivetrain extends SubsystemBase {
 
     public Drivetrain(){
         
+    }
+    
+    /**
+     * 
+     * @param degrees - Heading for robot in degrees. Angle should be CCW+
+     */
+    public void setPigeonHeading(double degrees){
+        m_pigeon.setYaw(degrees);
+    }
+
+    /**
+     * 
+     * @param heading - Heading for robot as a Rotation2d. Angle should be CCW+
+     */
+    public void setPigeonHeading(Rotation2d heading){
+        setPigeonHeading(heading.getDegrees());
+    }
+
+    /**
+     * Zeros what the pigeon's current heading is.
+     * <p>Essentially says that the current direction of the robot is the new forward
+     */
+    public void zeroPigeon(){
+        setPigeonHeading(0.0);
+    }
+
+    public Rotation2d getPigeonHeading(){
+        return Rotation2d.fromDegrees(m_pigeon.getYaw());
+    }
+
+    public Pose2d getRobotPose(){
+        return m_odometry.getPoseMeters();
+    }
+
+    public void setRobotPose(Pose2d pose){
+        m_odometry.resetPosition(pose, getPigeonHeading());
+    }
+
+    /**
+     * Resets the robot pose to be at (0, 0) with 0 rotation
+     */
+    public void resetRobotPose(){
+        setRobotPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)));
     }
 }
