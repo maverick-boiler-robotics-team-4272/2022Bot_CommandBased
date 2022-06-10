@@ -38,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
     private boolean m_fieldRelative = true;
 
     public Drivetrain(){
-        
+        zeroPigeon();
     }
     
     /**
@@ -115,5 +115,10 @@ public class Drivetrain extends SubsystemBase {
         
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
         setSwerveModuleStates(states);
+        updateOdometry();
+    }
+
+    public void updateOdometry(){
+        m_odometry.update(getPigeonHeading(), getSwerveModuleStates());
     }
 }
