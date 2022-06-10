@@ -5,8 +5,10 @@ import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.SwerveModule;
@@ -20,18 +22,20 @@ public class Drivetrain extends SubsystemBase {
      * X+ - right
      * Y+ - forward
      */
-    private final Translation2d m_frontRightPosition = new Translation2d(WHEEL_DISTANCE, WHEEL_DISTANCE);
     private final Translation2d m_frontLeftPosition = new Translation2d(-WHEEL_DISTANCE, WHEEL_DISTANCE);
-    private final Translation2d m_backRightPosition = new Translation2d( WHEEL_DISTANCE,-WHEEL_DISTANCE);
+    private final Translation2d m_frontRightPosition = new Translation2d(WHEEL_DISTANCE, WHEEL_DISTANCE);
     private final Translation2d m_backLeftPosition = new Translation2d( -WHEEL_DISTANCE,-WHEEL_DISTANCE);
+    private final Translation2d m_backRightPosition = new Translation2d( WHEEL_DISTANCE,-WHEEL_DISTANCE);
 
-    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontRightPosition, m_frontLeftPosition, m_backRightPosition, m_backLeftPosition);
+    private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftPosition, m_frontRightPosition, m_backLeftPosition, m_backRightPosition);
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(m_pigeon.getYaw()));
 
-    private final SwerveModule m_frontRightModule = new SwerveModule(2, 0.0, false);
     private final SwerveModule m_frontLeftModule  = new SwerveModule(1, 0.0, false);
-    private final SwerveModule m_backRightModule  = new SwerveModule(4, 0.0, false);
+    private final SwerveModule m_frontRightModule = new SwerveModule(2, 0.0, false);
     private final SwerveModule m_backLeftModule   = new SwerveModule(3, 0.0, false);
+    private final SwerveModule m_backRightModule  = new SwerveModule(4, 0.0, false);
+
+    private boolean m_fieldRelative = true;
 
     public Drivetrain(){
         
@@ -78,5 +82,38 @@ public class Drivetrain extends SubsystemBase {
      */
     public void resetRobotPose(){
         setRobotPose(new Pose2d(0.0, 0.0, new Rotation2d(0.0)));
+    }
+
+    public void setSwerveModuleStates(SwerveModuleState... states){
+        m_frontLeftModule.setState(states[0]);
+        m_frontRightModule.setState(states[1]);
+        m_backLeftModule.setState(states[2]);
+        m_backRightModule.setState(states[3]);
+    }
+
+    public SwerveModuleState[] getSwerveModuleStates(){
+        SwerveModuleState[] states = {
+            m_frontLeftModule.getState(),
+            m_frontRightModule.getState(),
+            m_backLeftModule.getState(),
+            m_backRightModule.getState()
+        };
+        return states;
+    }
+
+    public void toggleFieldRelative(){
+        m_fieldRelative = !m_fieldRelative;
+    }
+
+    public boolean getFieldRelative(){
+        return m_fieldRelative;
+    }
+
+    public void drive(double xSpeed, double ySpeed, double rotationSpeed){
+        ChassisSpeeds speeds = m_fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, -xSpeed, rotationSpeed, getPigeonHeading())
+                                               : new ChassisSpeeds(ySpeed, -xSpeed, rotationSpeed);
+        
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
+        setSwerveModuleStates(states);
     }
 }
