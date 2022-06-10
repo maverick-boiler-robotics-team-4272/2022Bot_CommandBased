@@ -58,7 +58,7 @@ public class RobotContainer {
         operatorRightStick.setMode(DeadzoneMode.Y_AXIS);
         operatorLeftStick.or(operatorRightStick)
                         .whileActiveContinuous(
-                            new ClimberRun(m_climber, operatorLeftStick::getRawDeadzonedY, operatorRightStick::getRawDeadzonedY)
+                            new ClimberRun(m_climber, operatorLeftStick::getDeadzonedY, operatorRightStick::getDeadzonedY)
                         );
         
         m_operatorController.getButton(Buttons.Y_BUTTON)

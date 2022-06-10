@@ -43,10 +43,10 @@ public class JoystickAxes extends Trigger {
                 val = getDeadzonedMagnitude();
                 break;
             case X_AXIS:
-                val = getRawDeadzonedX();
+                val = getDeadzonedX();
                 break;
             case Y_AXIS:
-                val = getRawDeadzonedY();
+                val = getDeadzonedY();
                 break;
             default:
                 val = 0.0;
@@ -87,33 +87,35 @@ public class JoystickAxes extends Trigger {
 
     /**
      * 
-     * @return deadzoned x taking into acount circular deadzone
+     * @return deadzoned x value
+     * @apiNote Deadzones based off of the deadzoning mode
+     * @apiNote If deadzoning mode is Y_AXIS, this returns 0.0
      */
     public double getDeadzonedX(){
-        return getDeadzonedMagnitude() * Math.cos(getAngle());
+        switch(m_mode){
+            case MAGNITUDE:
+                return getDeadzonedMagnitude() * Math.cos(getAngle());
+            case X_AXIS:
+                return deadzoneEquations(getRawXAxis(), m_deadzone);
+            default:
+                return 0.0;
+        }
     }
 
     /**
      * 
-     * @return deadzoned y taking into acount circular deadzone
+     * @return deadzoned y value
+     * @apiNote Deadzones based off of the deadzoning mode
+     * @apiNote If deadzoning mode is X_AXIS, this returns 0.0
      */
     public double getDeadzonedY(){
-        return getDeadzonedMagnitude() * Math.sin(getAngle());
-    }
-
-    /**
-     * 
-     * @return deadzoned x, only x axis deadzoned
-     */
-    public double getRawDeadzonedX(){
-        return deadzoneEquations(getRawXAxis(), m_deadzone);
-    }
-
-    /**
-     * 
-     * @return deadzoned y, only y axis deadzoned
-     */
-    public double getRawDeadzonedY(){
-        return deadzoneEquations(getRawYAxis(), m_deadzone);
+        switch(m_mode){
+            case MAGNITUDE:
+                return getDeadzonedMagnitude() * Math.sin(getAngle());
+            case Y_AXIS:
+                return deadzoneEquations(getRawYAxis(), m_deadzone);
+            default:
+                return 0.0;
+        }
     }
 }
