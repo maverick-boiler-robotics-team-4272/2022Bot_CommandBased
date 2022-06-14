@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.ClimberCommands.ClimberRun;
+import frc.robot.commands.ClimberCommands.ClimberRunCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.Utils;
@@ -58,7 +58,7 @@ public class RobotContainer {
         operatorRightStick.setMode(DeadzoneMode.Y_AXIS);
         operatorLeftStick.or(operatorRightStick)
                         .whileActiveContinuous(
-                            new ClimberRun(m_climber, operatorLeftStick::getDeadzonedY, operatorRightStick::getDeadzonedY)
+                            new ClimberRunCommand(m_climber, operatorLeftStick::getDeadzonedY, operatorRightStick::getDeadzonedY)
                         );
         
         m_operatorController.getButton(Buttons.Y_BUTTON)
