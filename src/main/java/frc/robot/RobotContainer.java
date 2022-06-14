@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ClimberCommands.ClimberRunCommand;
+import frc.robot.commands.DrivetrainCommands.DriveCommand;
 import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
@@ -34,6 +36,7 @@ public class RobotContainer {
     
     // The robot's subsystems and commands are defined here...
     Climber m_climber = new Climber();
+    Drivetrain m_drivetrain = new Drivetrain();
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -72,6 +75,30 @@ public class RobotContainer {
                             ).whenReleased(
                                 new InstantCommand(m_climber::reapplySoftLimits, m_climber)
                             );
+
+        
+        JoystickAxes driveLeftStick = m_driveController.getAxis(Axes.LEFT_STICK);
+        JoystickAxes driveRightStick = m_driveController.getAxis(Axes.RIGHT_STICK);
+
+        driveLeftStick.setMode(DeadzoneMode.MAGNITUDE);
+        driveRightStick.setMode(DeadzoneMode.X_AXIS);
+
+        driveLeftStick.or(driveRightStick)
+                      .whileActiveContinuous(
+                        new DriveCommand(m_drivetrain, driveLeftStick::getDeadzonedX, driveLeftStick::getDeadzonedY, driveRightStick::getDeadzonedX)
+                      );
+        
+        m_driveController.getButton(Buttons.START_BUTTON)
+                         .whenPressed(
+                            new InstantCommand(m_drivetrain::toggleFieldRelative, m_drivetrain)
+                         );
+                         
+        m_driveController.getButton(Buttons.B_BUTTON)
+                         .whenPressed(
+                            new InstantCommand(m_drivetrain::zeroPigeon, m_drivetrain)
+                         );
+
+
     }
 
     /**
