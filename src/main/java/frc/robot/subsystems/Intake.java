@@ -1,15 +1,19 @@
-package frc.robot.Subsystems;
+package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.Lidar;
 
-public class Intake {
+public class Intake extends SubsystemBase {
+
+    private static int INTAKE_NORM_CURR_LIM = 55;
+    private static int INTAKE_ERROR_CURR_LIM = 80;
 
     //Intake motors, ids 7-10(if needed)
-        //Beam breaks are true for unbroke and false for broken
+    //Beam breaks are true for unbroke and false for broken
     private DigitalInput shooterBeamBreak = new DigitalInput(16); //top feed
     private DigitalInput midFeedBeamBreak = new DigitalInput(15); //mid feed
     private DigitalInput lowFeedBeamBreak = new DigitalInput(14); //close to intake
@@ -26,12 +30,12 @@ public class Intake {
 
     private double hopperUpperBound = 0.1;
     private double hopperLowerBound = 0.03;
-
-    private double currIntakeLim = Constants.INTAKE_NORM_CURR_LIM;
     
 
     private CANSparkMax intakeMotor = new CANSparkMax(8, MotorType.kBrushless);
     private CANSparkMax shooterFeedMotor = new CANSparkMax(9, MotorType.kBrushless);
+
+    private double currentCurrentLimit = INTAKE_NORM_CURR_LIM;
 
     public Intake(){
         intakeMotor.setSmartCurrentLimit(55);
@@ -123,7 +127,7 @@ public class Intake {
             setIntakeCurrentLimit(45);
         }
 
-        if(getIntakeLidar() && currIntakeLim < 60){
+        if(getIntakeLidar() && currentCurrentLimit < 60){
             setIntakeCurrentLimit(60);
         }
 
@@ -135,35 +139,6 @@ public class Intake {
     
     public boolean hopperFull(){
         return (b1 && b2);
-    }
-    /**
-     * 
-     */
-    public void beamBreaksToSmart(){
-
-        boolean botBeam = !lowFeedBeamBreak.get();
-        boolean midBeam = !midFeedBeamBreak.get();
-        boolean shooterBeam = !shooterBeamBreak.get();
-
-
-        Constants.TUNING_TABLE.putBoolean("botBeam", botBeam);
-        Constants.TUNING_TABLE.putBoolean("midBeam", midBeam);
-        Constants.TUNING_TABLE.putBoolean("shooterBeam", shooterBeam);
-        Constants.TUNING_TABLE.putBoolean("hopBeam", getHopperBeam());
-
-        Constants.TUNING_TABLE.putNumber("lidar1", hopperLidar1.getRawDutyCycle());
-        Constants.TUNING_TABLE.putNumber("lidar2", hopperLidar2.getRawDutyCycle());
-        Constants.TUNING_TABLE.putNumber("lidar3", hopperLidar3.getRawDutyCycle());
-
-        Constants.TUNING_TABLE.putBoolean("intakeLidar", getIntakeLidar());
-        Constants.TUNING_TABLE.putBoolean("midHopperLidar", getMidHopperLidar());
-        Constants.TUNING_TABLE.putBoolean("backHopperLidar", getBackHopperLidar());
-        Constants.TUNING_TABLE.putBoolean("B1", b1);
-        Constants.TUNING_TABLE.putBoolean("B2", b2);
-
-        SmartDashboard.putBoolean("B1", b1);
-        SmartDashboard.putBoolean("B2", b2);
-
     }
     
 
@@ -272,15 +247,15 @@ public class Intake {
      */
     public void setIntakeCurrentLimit(int lim){
         this.intakeMotor.setSmartCurrentLimit(lim);
-        currIntakeLim = lim;
+        currentCurrentLimit = lim;
     }
 
     public void setIntakeToStuckCurrentLimit(){
-        setIntakeCurrentLimit(Constants.INTAKE_ERROR_CURR_LIM);
+        setIntakeCurrentLimit(INTAKE_ERROR_CURR_LIM);
     }
 
     public void setIntakeToUnStuckCurrentLimit(){
-        setIntakeCurrentLimit(Constants.INTAKE_NORM_CURR_LIM);
+        setIntakeCurrentLimit(INTAKE_NORM_CURR_LIM);
     }
 
     public boolean getB1(){
