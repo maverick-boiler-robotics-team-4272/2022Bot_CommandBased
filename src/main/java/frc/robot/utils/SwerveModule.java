@@ -88,7 +88,8 @@ public class SwerveModule {
     public void setState(SwerveModuleState desiredState){
         SwerveModuleState state = optimize(desiredState, getHeading());
 
-        m_drivePidController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
+        m_drivePidController.setReference(Units.metersToInches(state.speedMetersPerSecond)
+        * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO, ControlType.kVelocity);
 
         if(state.speedMetersPerSecond != 0.0){
             m_rotationPidController.setReference(state.angle.getDegrees(), ControlType.kPosition);

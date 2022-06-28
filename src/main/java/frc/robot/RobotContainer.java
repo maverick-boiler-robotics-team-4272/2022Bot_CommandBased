@@ -65,9 +65,7 @@ public class RobotContainer {
                         );
         
         m_operatorController.getButton(Buttons.Y_BUTTON)
-                            .whenPressed(
-                                new InstantCommand(m_climber::togglePneumatics, m_climber)
-                            );
+                            .whenPressed(m_climber::togglePneumatics, m_climber);
         
         m_operatorController.getButton(Buttons.LEFT_BUMPER)
                             .whenPressed(
@@ -84,19 +82,19 @@ public class RobotContainer {
         driveRightStick.setMode(DeadzoneMode.X_AXIS);
 
         driveLeftStick.or(driveRightStick)
-                      .whileActiveContinuous(
+                    .whileActiveContinuous(
                         new DriveCommand(m_drivetrain, driveLeftStick::getDeadzonedX, driveLeftStick::getDeadzonedY, driveRightStick::getDeadzonedX)
-                      );
+                    );
         
         m_driveController.getButton(Buttons.START_BUTTON)
-                         .whenPressed(
+                        .whenPressed(
                             new InstantCommand(m_drivetrain::toggleFieldRelative, m_drivetrain)
-                         );
+                        );
                          
         m_driveController.getButton(Buttons.B_BUTTON)
-                         .whenPressed(
+                        .whenPressed(
                             new InstantCommand(m_drivetrain::zeroPigeon, m_drivetrain)
-                         );
+                        );
 
 
     }

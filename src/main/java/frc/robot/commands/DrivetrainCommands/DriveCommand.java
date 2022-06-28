@@ -22,6 +22,11 @@ public class DriveCommand extends CommandBase {
 
     @Override
     public void execute(){
-        m_drivetrain.drive(m_xSpeed.getAsDouble(), m_ySpeed.getAsDouble(), m_rSpeed.getAsDouble());
+        m_drivetrain.drive(m_xSpeed.getAsDouble() * Drivetrain.MAX_LINEAR_SPEED, m_ySpeed.getAsDouble() * Drivetrain.MAX_LINEAR_SPEED, m_rSpeed.getAsDouble() * Drivetrain.MAX_ANGULAR_SPEED);
+    }
+
+    @Override
+    public void end(boolean interrupted){
+        m_drivetrain.drive(0.0, 0.0, 0.0);
     }
 }

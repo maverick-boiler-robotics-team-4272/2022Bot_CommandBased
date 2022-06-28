@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.*;
@@ -15,6 +16,10 @@ public class Climber extends SubsystemBase {
     private CANSparkMax m_rightMotor = new CANSparkMax(7, MotorType.kBrushless);
 
     private DoubleSolenoid m_solenoid = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 3, 2);
+
+    public Climber(){
+        m_solenoid.set(Value.kReverse);
+    }
 
     public void runClimbers(double leftSpeed, double rightSpeed){
         m_leftMotor.set(leftSpeed);
