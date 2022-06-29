@@ -162,5 +162,5 @@ bin/
 *-window.json
 
 #gradle and wrappers
-build.gradle
-gradlew
+./build.gradle
+./gradlew
