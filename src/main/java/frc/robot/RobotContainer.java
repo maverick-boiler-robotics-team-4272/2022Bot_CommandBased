@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.commands.ClimberCommands.ClimberRunCommand;
-import frc.robot.commands.DrivetrainCommands.DriveCommand;
+import frc.robot.commands.ClimberRunCommand;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.IntakeRunCommand;
+import frc.robot.commands.IntakeSetupCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.commands.IntakeCommands.IntakeRun;
-import frc.robot.commands.IntakeCommands.IntakeSetup;
 import frc.robot.subsystems.Intake;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
@@ -86,18 +86,18 @@ public class RobotContainer {
                             );
         
         operatorRightTrigger.whenActive(
-                                new IntakeSetup(m_intake, false)
+                                new IntakeSetupCommand(m_intake, false)
                             ).whileActiveContinuous(
-                                new IntakeRun(m_intake, operatorRightTrigger::getDeadzonedValue)
+                                new IntakeRunCommand(m_intake, operatorRightTrigger::getDeadzonedValue)
                             ).whenInactive(
                                 m_intake::stopIntake, m_intake
                             );
         
         operatorLeftTrigger.and(operatorRightTrigger.negate())
                             .whenActive(
-                                new IntakeSetup(m_intake, true)
+                                new IntakeSetupCommand(m_intake, true)
                             ).whileActiveContinuous(
-                                new IntakeRun(m_intake, operatorLeftTrigger::getDeadzonedValue)
+                                new IntakeRunCommand(m_intake, operatorLeftTrigger::getDeadzonedValue)
                             ).whenInactive(
                                 m_intake::stopIntake, m_intake
                             );
@@ -139,9 +139,9 @@ public class RobotContainer {
                         .and(operatorRightTrigger.negate())
                         .and(operatorLeftTrigger.negate())
                         .whenActive(
-                            new IntakeSetup(m_intake, false)
+                            new IntakeSetupCommand(m_intake, false)
                         ).whileActiveContinuous(
-                            new IntakeRun(m_intake, () -> {return 0.5;})
+                            new IntakeRunCommand(m_intake, () -> {return 0.5;})
                         ).whenInactive(
                             m_intake::stopIntake, m_intake
                         );

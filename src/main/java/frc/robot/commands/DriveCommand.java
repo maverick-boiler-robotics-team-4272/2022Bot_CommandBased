@@ -1,4 +1,4 @@
-package frc.robot.commands.DrivetrainCommands;
+package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
