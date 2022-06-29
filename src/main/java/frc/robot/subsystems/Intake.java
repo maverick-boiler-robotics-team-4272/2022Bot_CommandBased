@@ -4,6 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Lidar;
 
@@ -14,12 +17,12 @@ public class Intake extends SubsystemBase {
 
     //Intake motors, ids 7-10(if needed)
     //Beam breaks are true for unbroke and false for broken
-    private DigitalInput shooterBeamBreak = new DigitalInput(16); //top feed
-    private DigitalInput midFeedBeamBreak = new DigitalInput(15); //mid feed
-    private DigitalInput lowFeedBeamBreak = new DigitalInput(14); //close to intake
-    private Lidar hopperLidar1 = new Lidar(20);
-    private Lidar hopperLidar2 = new Lidar(18);
-    private Lidar hopperLidar3 = new Lidar(19);
+    private DigitalInput m_shooterBeamBreak = new DigitalInput(16); //top feed
+    private DigitalInput m_midFeedBeamBreak = new DigitalInput(15); //mid feed
+    private DigitalInput m_lowFeedBeamBreak = new DigitalInput(14); //close to intake
+    private Lidar m_hopperLidar1 = new Lidar(20);
+    private Lidar m_hopperLidar2 = new Lidar(18);
+    private Lidar m_hopperLidar3 = new Lidar(19);
     
     //run intake booleans
     private boolean b1 = false;
@@ -28,21 +31,28 @@ public class Intake extends SubsystemBase {
     private boolean b1Prepped = false;
     private boolean b1Mid = false;
 
+    private boolean reversed = false;
+    private boolean override = false;
+    private boolean intakeOnly = false;
+
     private double hopperUpperBound = 0.1;
     private double hopperLowerBound = 0.03;
     
 
-    private CANSparkMax intakeMotor = new CANSparkMax(8, MotorType.kBrushless);
-    private CANSparkMax shooterFeedMotor = new CANSparkMax(9, MotorType.kBrushless);
+    private CANSparkMax m_intakeMotor = new CANSparkMax(8, MotorType.kBrushless);
+    private CANSparkMax m_shooterFeedMotor = new CANSparkMax(9, MotorType.kBrushless);
+
+    private DoubleSolenoid m_intakeSolenoid = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 1, 0);
 
     private double currentCurrentLimit = INTAKE_NORM_CURR_LIM;
 
     public Intake(){
-        intakeMotor.setSmartCurrentLimit(55);
-        shooterFeedMotor.setSmartCurrentLimit(45);
-        shooterFeedMotor.setOpenLoopRampRate(0.5);
-        intakeMotor.burnFlash();
-        shooterFeedMotor.burnFlash();        
+        m_intakeMotor.setSmartCurrentLimit(55);
+        m_shooterFeedMotor.setSmartCurrentLimit(45);
+        m_shooterFeedMotor.setOpenLoopRampRate(0.5);
+        m_intakeMotor.burnFlash();
+        m_shooterFeedMotor.burnFlash();
+        m_intakeSolenoid.set(Value.kForward);
     }
 
     /**
@@ -52,33 +62,33 @@ public class Intake extends SubsystemBase {
      * @param override intake override to not use hopperbeam
      * @param intakeOnly to run just the intake and not the feed
      */
-    public void runIntake(double triggerVal, boolean inverted, boolean override, boolean intakeOnly){
+    public void runIntake(double triggerVal){
 
-        boolean midBeam = !midFeedBeamBreak.get();
-        boolean shooterBeam = !shooterBeamBreak.get();
+        boolean midBeam = !m_midFeedBeamBreak.get();
+        boolean shooterBeam = !m_shooterBeamBreak.get();
         boolean hopperBeam = getHopperBeam();
         double feedVal = -0.6;
 
         if(intakeOnly){
-            intakeMotor.set(triggerVal);
+            m_intakeMotor.set(triggerVal);
             return;
         }
 
-        if(inverted){
-            intakeMotor.set(-triggerVal);
-            shooterFeedMotor.set(-feedVal);
+        if(reversed){
+            m_intakeMotor.set(-triggerVal);
+            m_shooterFeedMotor.set(-feedVal);
             resetBall();
             return;
         }
 
         if(override){
 
-            intakeMotor.set(triggerVal);
+            m_intakeMotor.set(triggerVal);
 
             if(midBeam || shooterBeam || b1Prepped){
-                shooterFeedMotor.set(0.0);
+                m_shooterFeedMotor.set(0.0);
             }else{
-                shooterFeedMotor.set(feedVal);
+                m_shooterFeedMotor.set(feedVal);
             }
 
             if(getIntakeLidar() && b1){
@@ -131,9 +141,9 @@ public class Intake extends SubsystemBase {
             setIntakeCurrentLimit(60);
         }
 
-        intakeMotor.set(triggerVal);
+        m_intakeMotor.set(triggerVal);
 
-        shooterFeedMotor.set(feedVal);
+        m_shooterFeedMotor.set(feedVal);
         
     }
     
@@ -175,7 +185,7 @@ public class Intake extends SubsystemBase {
      * @param val speed to run the motor at
      */
     public void reverseFeed(double val){
-        shooterFeedMotor.set(val);
+        m_shooterFeedMotor.set(val);
     }
 
     /**
@@ -184,9 +194,9 @@ public class Intake extends SubsystemBase {
      */
     public boolean ballPresent(){
         
-        boolean botBeam = !lowFeedBeamBreak.get();
-        boolean midBeam = !midFeedBeamBreak.get();
-        boolean shooterBeam = !shooterBeamBreak.get();
+        boolean botBeam = !m_lowFeedBeamBreak.get();
+        boolean midBeam = !m_midFeedBeamBreak.get();
+        boolean shooterBeam = !m_shooterBeamBreak.get();
         boolean hopper = getBallInHopper();
         
         return (botBeam || midBeam || shooterBeam || hopper || b1);
@@ -213,7 +223,7 @@ public class Intake extends SubsystemBase {
      * Completely stops the intake
      */
     public void stopIntake(){
-        intakeMotor.set(0.0);
+        m_intakeMotor.set(0.0);
         stopFeedShooter();
     }
 
@@ -222,7 +232,7 @@ public class Intake extends SubsystemBase {
      */
     public void feedShooter(){
         feedShooter(-0.6);
-        intakeMotor.set(0.15);
+        m_intakeMotor.set(0.15);
     }
 
     /**
@@ -230,15 +240,15 @@ public class Intake extends SubsystemBase {
      * @param feedPercent speed to run it at
      */
     public void feedShooter(double feedPercent){
-        intakeMotor.set(0.15);
-        shooterFeedMotor.set(feedPercent);
+        m_intakeMotor.set(0.15);
+        m_shooterFeedMotor.set(feedPercent);
     }
 
     /**
      * Stops shooter feed motor
      */
     public void stopFeedShooter(){
-        shooterFeedMotor.set(0.0);
+        m_shooterFeedMotor.set(0.0);
     }
 
     /**
@@ -246,7 +256,7 @@ public class Intake extends SubsystemBase {
      * @param lim the current limit
      */
     public void setIntakeCurrentLimit(int lim){
-        this.intakeMotor.setSmartCurrentLimit(lim);
+        this.m_intakeMotor.setSmartCurrentLimit(lim);
         currentCurrentLimit = lim;
     }
 
@@ -275,39 +285,54 @@ public class Intake extends SubsystemBase {
      * @return whether the beam break is tripped or not
      */
     public boolean getShooterBeam(){
-        return !(shooterBeamBreak.get());
+        return !(m_shooterBeamBreak.get());
     }
 
     public boolean getMidBeam(){
-        return !(midFeedBeamBreak.get());
+        return !(m_midFeedBeamBreak.get());
     }
 
     public boolean getLowBeam(){
-        return !(lowFeedBeamBreak.get());
+        return !(m_lowFeedBeamBreak.get());
     }
 
     public boolean getHopperBeam(){
         
         return
                 //(hopperLidar1.getRawDutyCycle() < hopperUpperBound && hopperLidar1.getRawDutyCycle() > hopperLowerBound)||
-                (hopperLidar2.getRawDutyCycle() < hopperUpperBound && hopperLidar2.getRawDutyCycle() > hopperLowerBound);
+                (m_hopperLidar2.getRawDutyCycle() < hopperUpperBound && m_hopperLidar2.getRawDutyCycle() > hopperLowerBound);
                 //(hopperLidar3.getRawDutyCycle() < hopperUpperBound && hopperLidar3.getRawDutyCycle() > 0.01);
         
     }
 
     public boolean getIntakeLidar(){
-        return (hopperLidar1.getRawDutyCycle() > hopperLowerBound) &&
-                (hopperLidar1.getRawDutyCycle() < hopperUpperBound);
+        return (m_hopperLidar1.getRawDutyCycle() > hopperLowerBound) &&
+                (m_hopperLidar1.getRawDutyCycle() < hopperUpperBound);
     }
     
     public boolean getMidHopperLidar(){
-        return (hopperLidar2.getRawDutyCycle() > hopperLowerBound) &&
-                (hopperLidar2.getRawDutyCycle() < hopperUpperBound);
+        return (m_hopperLidar2.getRawDutyCycle() > hopperLowerBound) &&
+                (m_hopperLidar2.getRawDutyCycle() < hopperUpperBound);
     }
     
     public boolean getBackHopperLidar(){
-        return (hopperLidar3.getRawDutyCycle() > hopperLowerBound) &&
-                (hopperLidar3.getRawDutyCycle() < hopperUpperBound);
+        return (m_hopperLidar3.getRawDutyCycle() > hopperLowerBound) &&
+                (m_hopperLidar3.getRawDutyCycle() < hopperUpperBound);
     }
 
+    public void toggleOverride(){
+        override = !override;
+    }
+
+    public void toggleIntakePneumatic(){
+        m_intakeSolenoid.toggle();
+    }
+
+    public void setReversed(boolean reverse){
+        reversed = reverse;
+    }
+
+    public void setIntakeOnly(boolean intakeOnly){
+        this.intakeOnly = intakeOnly;
+    }
 }
