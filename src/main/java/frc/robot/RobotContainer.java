@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ClimberRunCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeRunCommand;
-import frc.robot.commands.IntakeSetupCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -85,21 +84,13 @@ public class RobotContainer {
                                 m_climber::reapplySoftLimits, m_climber
                             );
         
-        operatorRightTrigger.whenActive(
-                                new IntakeSetupCommand(m_intake, false)
-                            ).whileActiveContinuous(
-                                new IntakeRunCommand(m_intake, operatorRightTrigger::getDeadzonedValue)
-                            ).whenInactive(
-                                m_intake::stopIntake, m_intake
+        operatorRightTrigger.whileActiveContinuous(
+                                new IntakeRunCommand(m_intake, false, operatorRightTrigger::getDeadzonedValue)
                             );
         
         operatorLeftTrigger.and(operatorRightTrigger.negate())
-                            .whenActive(
-                                new IntakeSetupCommand(m_intake, true)
-                            ).whileActiveContinuous(
-                                new IntakeRunCommand(m_intake, operatorLeftTrigger::getDeadzonedValue)
-                            ).whenInactive(
-                                m_intake::stopIntake, m_intake
+                            .whileActiveContinuous(
+                                new IntakeRunCommand(m_intake, true, operatorLeftTrigger::getDeadzonedValue)
                             );
 
         
@@ -138,12 +129,10 @@ public class RobotContainer {
         m_driveController.getButton(Buttons.RIGHT_BUMPER)
                         .and(operatorRightTrigger.negate())
                         .and(operatorLeftTrigger.negate())
-                        .whenActive(
-                            new IntakeSetupCommand(m_intake, false)
-                        ).whileActiveContinuous(
-                            new IntakeRunCommand(m_intake, () -> {return 0.5;})
-                        ).whenInactive(
-                            m_intake::stopIntake, m_intake
+                        .whileActiveContinuous(
+                            new IntakeRunCommand(m_intake, false, () -> {
+                                return 0.5;
+                            })
                         );
     }
 
