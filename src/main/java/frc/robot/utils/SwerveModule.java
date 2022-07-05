@@ -18,6 +18,16 @@ public class SwerveModule {
     private static final double DRIVE_RATIO = 6.75;
     private static final double STEER_RATIO = 150.0 / 7.0;
 
+    private static final double DRIVE_P = 0.03596;
+    private static final double DRIVE_I = 0.0;
+    private static final double DRIVE_D = 0.0;
+    private static final double DRIVE_F = 1.0;
+
+    private static final double STEER_P = 0.01;
+    private static final double STEER_I = 0.0001;
+    private static final double STEER_D = 0.0;
+    private static final double STEER_F = 0.0;
+
     private CANSparkMax m_driveMotor;
     private RelativeEncoder m_driveEncoder;
     private SparkMaxPIDController m_drivePidController;
@@ -44,6 +54,20 @@ public class SwerveModule {
         m_offset = offset;
         m_externalRotationEncoder = new CANCoder(moduleID + 20);
         m_flipped = flipped ? 1.0 : -1.0;
+
+        m_drivePidController.setP(DRIVE_P);
+        m_drivePidController.setI(DRIVE_I);
+        m_drivePidController.setD(DRIVE_D);
+        m_drivePidController.setFF(DRIVE_F);
+
+        m_rotationPidController.setP(STEER_P);
+        m_rotationPidController.setI(STEER_I);
+        m_rotationPidController.setD(STEER_D);
+        m_rotationPidController.setFF(STEER_F);
+
+        // m_driveMotor.burnFlash();
+        // m_rotationMotor.burnFlash();
+
         init();
     }
 

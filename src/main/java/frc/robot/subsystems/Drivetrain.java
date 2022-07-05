@@ -17,7 +17,7 @@ public class Drivetrain extends SubsystemBase {
     private static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
 
     public static final double MAX_LINEAR_SPEED = 4.4; // meters per second
-    public static final double MAX_ANGULAR_SPEED = 8.0 * Math.PI;
+    public static final double MAX_ANGULAR_SPEED = 4.0 * Math.PI;
 
     private final Pigeon2 m_pigeon = new Pigeon2(25);
 
@@ -34,7 +34,7 @@ public class Drivetrain extends SubsystemBase {
     private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(m_pigeon.getYaw()));
 
     private final SwerveModule m_frontLeftModule  = new SwerveModule(1, 311.0,  true);
-    private final SwerveModule m_frontRightModule = new SwerveModule(2, 182.0, false);
+    private final SwerveModule m_frontRightModule = new SwerveModule(2,   2.0, false);
     private final SwerveModule m_backLeftModule   = new SwerveModule(3, 209.0, false);
     private final SwerveModule m_backRightModule  = new SwerveModule(4,  59.0, false);
 
