@@ -39,9 +39,9 @@ public class RobotContainer {
     private XBoxController m_operatorController = new XBoxController(1);
     
     // The robot's subsystems and commands are defined here...
-    Climber m_climber = new Climber();
-    Drivetrain m_drivetrain = new Drivetrain();
-    Intake m_intake = new Intake();
+    private Climber m_climber = new Climber();
+    private Drivetrain m_drivetrain = new Drivetrain();
+    private Intake m_intake = new Intake();
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
@@ -144,5 +144,17 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         return new InstantCommand(Utils::noop);
+    }
+    
+    public Climber getClimber(){
+        return m_climber;
+    }
+
+    public Drivetrain getDrivetrain(){
+        return m_drivetrain;
+    }
+
+    public Intake getIntake(){
+        return m_intake;
     }
 }

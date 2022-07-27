@@ -17,6 +17,7 @@ public class SwerveModule {
     private static final double WHEEL_RADIUS = 2.0;
     private static final double DRIVE_RATIO = 6.75;
     private static final double STEER_RATIO = 150.0 / 7.0;
+    private static final double MODULE_ROTATION_DEADZONE = 4.0;
 
     private CANSparkMax m_driveMotor;
     private RelativeEncoder m_driveEncoder;
@@ -26,7 +27,8 @@ public class SwerveModule {
     private SparkMaxPIDController m_rotationPidController;
     private double m_offset;
     private CANCoder m_externalRotationEncoder;
-    private double m_flipped;
+    private final double m_flipped;
+    private final int m_id;
 
     /**
      * 
@@ -44,7 +46,11 @@ public class SwerveModule {
         m_offset = offset;
         m_externalRotationEncoder = new CANCoder(moduleID + 20);
         m_flipped = flipped ? 1.0 : -1.0;
+        m_id = moduleID;
         init();
+    }
+    private double getEncoderPosition(){
+        return (m_externalRotationEncoder.getAbsolutePosition() - m_offset) * m_flipped;
     }
 
     /**
@@ -58,8 +64,7 @@ public class SwerveModule {
         //PI2 is 2 * pi, 60.0 is the amount of seconds in a minute
         m_driveEncoder.setVelocityConversionFactor(WHEEL_RADIUS * PI2 / (60.0 * DRIVE_RATIO * Units.metersToInches(1.0)));
 
-        double current = (m_externalRotationEncoder.getAbsolutePosition() - m_offset) % 360.0;
-        m_rotationEncoder.setPosition(m_flipped * current);
+        m_rotationEncoder.setPosition(getEncoderPosition());
     }
 
     /**
@@ -102,6 +107,36 @@ public class SwerveModule {
      */
     public SwerveModuleState getState(){
         return new SwerveModuleState(m_driveEncoder.getVelocity(), getHeading());
+    }
+
+    public void updateRotation(){
+        double encoderPosition = getEncoderPosition();
+        if(Math.abs(m_rotationEncoder.getPosition() - encoderPosition) > MODULE_ROTATION_DEADZONE){
+            m_rotationEncoder.setPosition(encoderPosition);
+            String moduleName;
+            switch(m_id){
+                case 1:
+                    moduleName = "Front Left";
+                    break;
+                
+                case 2:
+                    moduleName = "Front Right";
+                    break;
+
+                case 3:
+                    moduleName = "Back Left";
+                    break;
+
+                case 4:
+                    moduleName = "Back Right";
+                    break;
+                
+                default:
+                    moduleName = "A";
+            }
+
+            System.out.println(moduleName + " module needed updating.");
+        }
     }
 
     /**

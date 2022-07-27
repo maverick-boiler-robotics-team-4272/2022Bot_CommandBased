@@ -124,4 +124,11 @@ public class Drivetrain extends SubsystemBase {
     public void updateOdometry(){
         m_odometry.update(getPigeonHeading(), getSwerveModuleStates());
     }
+
+    public void updateModules(){
+        m_frontLeftModule.updateRotation();
+        m_frontRightModule.updateRotation();
+        m_backLeftModule.updateRotation();
+        m_backRightModule.updateRotation();
+    }
 }

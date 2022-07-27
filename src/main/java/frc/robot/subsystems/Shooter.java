@@ -15,7 +15,6 @@ public class Shooter {
 
     private static final double HOOD_DEADZONE = 0.025;
     private static final double SHOOTER_DEADZONE = 50.0;
-    private static final double SHOOTER_FEED_DEADZONE = 100.0;
 
     private static ShuffleboardTable m_table = ShuffleboardTable.getTable("Shooter");
 
@@ -73,8 +72,6 @@ public class Shooter {
 
     private boolean ballShooting = false;
     
-    private boolean shooterAtSpeed = false;
-
     private double shooterP = 0.00004;
     private double shooterI = 0.0;
     private double shooterD = 0.0;
@@ -151,9 +148,9 @@ public class Shooter {
         // hoodPIDController.setFF(SmartDashboard.getNumber("Rotation Motor F", 0.001));
 
         shooterP = m_table.getNumber("Shooter Motor P", shooterP);
-        shooterI = m_table.getNumber("Shooter Motor P", shooterI);
-        shooterD = m_table.getNumber("Shooter Motor P", shooterD);
-        shooterFF = m_table.getNumber("Shooter Motor P", shooterFF);
+        shooterI = m_table.getNumber("Shooter Motor I", shooterI);
+        shooterD = m_table.getNumber("Shooter Motor D", shooterD);
+        shooterFF = m_table.getNumber("Shooter Motor FF", shooterFF);
 
         m_shooterPIDController.setP(shooterP);
         m_shooterPIDController.setI(shooterI);
@@ -178,21 +175,9 @@ public class Shooter {
 
         m_shooterMotor.getPIDController().setReference(m_shooterAmt, ControlType.kSmartVelocity);
 
-        if(m_shooterMotor.getEncoder().getVelocity() >= m_shooterAmt - (SHOOTER_DEADZONE) &&
-            m_shooterMotor.getEncoder().getVelocity() <= m_shooterAmt + (SHOOTER_DEADZONE) &&
+        if(Math.abs(m_shooterMotor.getEncoder().getVelocity() - m_shooterAmt) <= SHOOTER_DEADZONE &&
             getHoodAtPosition()){
-            shooterAtSpeed = true;
-
-        }
-
-        if(m_shooterMotor.getEncoder().getVelocity() < m_shooterAmt - (SHOOTER_FEED_DEADZONE) ||
-        m_shooterMotor.getEncoder().getVelocity() > m_shooterAmt + (SHOOTER_FEED_DEADZONE)){
-            shooterAtSpeed = false;
-        }        
-
-        if(shooterAtSpeed){
-
-            m_intake.feedShooter(m_feedAmt);
+                m_intake.feedShooter(m_feedAmt);
         }else{
             m_intake.stopIntake();
             m_intake.stopFeedShooter();
@@ -208,7 +193,6 @@ public class Shooter {
         m_intake.stopFeedShooter();
         m_intake.stopIntake();
         m_intake.resetBall();
-        shooterAtSpeed = false;
     }
 
      /**
@@ -326,7 +310,7 @@ public class Shooter {
     public boolean getHoodAtPosition(){
         double hoodPos = m_hoodMotor.getEncoder().getPosition();
 
-        return (hoodPos < (m_hoodAmt - (m_hoodAmt * HOOD_DEADZONE)) && hoodPos > (m_hoodAmt + m_hoodAmt * (HOOD_DEADZONE)));
+        return Math.abs(hoodPos - m_hoodAmt) < HOOD_DEADZONE;
 
     }
 

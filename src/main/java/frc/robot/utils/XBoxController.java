@@ -5,9 +5,12 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import static edu.wpi.first.wpilibj.XboxController.Button.*;
 import static edu.wpi.first.wpilibj.XboxController.Axis.*;
-import static frc.robot.Constants.*;
 
 public class XBoxController {
+
+    private static final double JOYSTICK_DEADZONE = 0.15;
+    private static final double TRIGGER_DEADZONE = 0.1;
+
     public enum Buttons {
         A_BUTTON,
         B_BUTTON,
