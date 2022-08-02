@@ -18,7 +18,7 @@ public class SwerveModule {
     private static final double DRIVE_RATIO = 6.75;
     private static final double STEER_RATIO = 150.0 / 7.0;
 
-    private static final double DRIVE_P = 0.03596;
+    private static final double DRIVE_P = 0.003596;
     private static final double DRIVE_I = 0.0;
     private static final double DRIVE_D = 0.0;
     private static final double DRIVE_F = 1.0;

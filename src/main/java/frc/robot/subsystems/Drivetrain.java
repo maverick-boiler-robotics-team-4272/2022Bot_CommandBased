@@ -18,6 +18,8 @@ public class Drivetrain extends SubsystemBase {
 
     public static final double MAX_LINEAR_SPEED = 4.4; // meters per second
     public static final double MAX_ANGULAR_SPEED = 4.0 * Math.PI;
+    public static final double MAX_LINEAR_ACC = 4.75;
+    public static final double MAX_ANGULAR_ACC = 1.5 * Math.PI;
 
     private final Pigeon2 m_pigeon = new Pigeon2(25);
 
@@ -124,4 +126,9 @@ public class Drivetrain extends SubsystemBase {
     public void updateOdometry(){
         m_odometry.update(getPigeonHeading(), getSwerveModuleStates());
     }
+
+    public SwerveDriveKinematics getKinematics(){
+        return m_kinematics;
+    }
+
 }

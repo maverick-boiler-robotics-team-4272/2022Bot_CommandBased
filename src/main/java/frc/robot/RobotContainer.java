@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,12 +12,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.ClimberRunCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.IntakeRunCommand;
+import frc.robot.commands.auto_commands.Terminal2Ball;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
-import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
 
 import frc.robot.utils.JoystickAxes.DeadzoneMode;
@@ -47,6 +48,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         // Configure the button bindings
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
         configureButtonBindings();
     }
 
@@ -143,6 +145,6 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new InstantCommand(Utils::noop);
+        return new Terminal2Ball(m_drivetrain);
     }
 }
