@@ -47,6 +47,7 @@ public class SwerveModule {
         m_externalRotationEncoder = new CANCoder(moduleID + 20);
         m_flipped = flipped ? 1.0 : -1.0;
         m_id = moduleID;
+
         init();
     }
     private double getEncoderPosition(){
@@ -65,6 +66,9 @@ public class SwerveModule {
         m_driveEncoder.setVelocityConversionFactor(WHEEL_RADIUS * PI2 / (60.0 * DRIVE_RATIO * Units.metersToInches(1.0)));
 
         m_rotationEncoder.setPosition(getEncoderPosition());
+
+        m_driveMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+        m_rotationMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
     }
 
     /**
@@ -111,7 +115,7 @@ public class SwerveModule {
 
     public void updateRotation(){
         double encoderPosition = getEncoderPosition();
-        if(Math.abs(m_rotationEncoder.getPosition() - encoderPosition) > MODULE_ROTATION_DEADZONE){
+        if(Math.abs(Utils.euclideanModulo(m_rotationEncoder.getPosition(), 360.0) - encoderPosition) > MODULE_ROTATION_DEADZONE){
             m_rotationEncoder.setPosition(encoderPosition);
             String moduleName;
             switch(m_id){

@@ -11,6 +11,8 @@ import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.ShuffleboardTable;
 
+import static frc.robot.Constants.*;
+
 public class Shooter {
 
     private static final double HOOD_DEADZONE = 0.025;
@@ -77,8 +79,6 @@ public class Shooter {
     private double shooterD = 0.0;
     private double shooterFF = 0.000199;//0.0001963
 
-    private double shooterVoltageCompensation = 11.0;
-
     private double hoodP = 0.0000001;
     private double hoodI = 0.0;
     private double hoodD = 0.0;
@@ -124,8 +124,8 @@ public class Shooter {
         m_shooterPIDController.setSmartMotionMaxAccel(4000.0, 0);
         m_shooterPIDController.setSmartMotionAllowedClosedLoopError(5.0, 0);
 
-        m_shooterMotor.enableVoltageCompensation(shooterVoltageCompensation);
-        m_shooterFollowerMotor.enableVoltageCompensation(shooterVoltageCompensation);
+        m_shooterMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+        m_shooterFollowerMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
 
         m_shooterMotor.setIdleMode(IdleMode.kCoast);
         m_shooterFollowerMotor.setIdleMode(IdleMode.kCoast);
@@ -350,8 +350,8 @@ public class Shooter {
         m_shooterPIDController.setSmartMotionMaxAccel(4000.0, 0);
         m_shooterPIDController.setSmartMotionAllowedClosedLoopError(5.0, 0);
 
-        m_shooterMotor.enableVoltageCompensation(shooterVoltageCompensation);
-        m_shooterFollowerMotor.enableVoltageCompensation(shooterVoltageCompensation);
+        m_shooterMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+        m_shooterFollowerMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
 
         m_shooterMotor.setIdleMode(IdleMode.kCoast);
         m_shooterFollowerMotor.setIdleMode(IdleMode.kCoast);

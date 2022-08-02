@@ -17,5 +17,7 @@ public final class Constants {
     public static final double PI2 = Math.PI * 2;
     public static final double DEG_TO_RAD = Math.PI / 180.0;
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
+
+    public static final double VOLTAGE_COMPENSATION = 11.0;
     
 }

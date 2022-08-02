@@ -9,9 +9,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static frc.robot.Constants.*;
+
 public class Climber extends SubsystemBase {
 
     private static final float CLIMBER_SOFTLIMIT = -305.0f;
+    private static final int CURRENT_LIMIT = 40;
 
     private CANSparkMax m_leftMotor = new CANSparkMax(17, MotorType.kBrushless);
     private CANSparkMax m_rightMotor = new CANSparkMax(7, MotorType.kBrushless);
@@ -20,6 +23,15 @@ public class Climber extends SubsystemBase {
 
     public Climber(){
         m_solenoid.set(Value.kReverse);
+
+        m_leftMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+        m_rightMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+
+        m_leftMotor.setSmartCurrentLimit(CURRENT_LIMIT);
+        m_rightMotor.setSmartCurrentLimit(CURRENT_LIMIT);
+
+        m_leftMotor.burnFlash();
+        m_rightMotor.burnFlash();
     }
 
     public void runClimbers(double leftSpeed, double rightSpeed){

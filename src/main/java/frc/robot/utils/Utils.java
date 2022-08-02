@@ -11,6 +11,10 @@ public class Utils {
         }
     }
 
+    public static double euclideanModulo(double n, double m){
+        return ( (n % m) + m ) % m;
+    }
+
     public static void noop(){
 
     }
