@@ -14,8 +14,10 @@ import frc.robot.commands.IntakeRunCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
+import frc.robot.utils.Limelight;
 import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
 
@@ -42,10 +44,13 @@ public class RobotContainer {
     private Climber m_climber = new Climber();
     private Drivetrain m_drivetrain = new Drivetrain();
     private Intake m_intake = new Intake();
+    private Shooter m_shooter = new Shooter(m_intake);
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        Limelight.setLEDMode(Limelight.LEDMode.OFF);
+
         // Configure the button bindings
         configureButtonBindings();
     }
