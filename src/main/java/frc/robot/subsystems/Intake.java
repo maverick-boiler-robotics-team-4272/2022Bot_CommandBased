@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Lidar;
 
+import static frc.robot.Constants.*;
+
 public class Intake extends SubsystemBase {
 
     private static int INTAKE_NORM_CURR_LIM = 55;
@@ -48,10 +50,16 @@ public class Intake extends SubsystemBase {
 
     public Intake(){
         m_intakeMotor.setSmartCurrentLimit(55);
+
         m_shooterFeedMotor.setSmartCurrentLimit(45);
         m_shooterFeedMotor.setOpenLoopRampRate(0.5);
+
+        m_intakeMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+        m_shooterFeedMotor.enableVoltageCompensation(VOLTAGE_COMPENSATION);
+
         m_intakeMotor.burnFlash();
         m_shooterFeedMotor.burnFlash();
+
         m_intakeSolenoid.set(Value.kForward);
     }
 

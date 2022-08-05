@@ -5,19 +5,27 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.AimShootCommand;
 import frc.robot.commands.ClimberRunCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.FixHoodCommand;
 import frc.robot.commands.IntakeRunCommand;
 import frc.robot.commands.auto_commands.Terminal2Ball;
+import frc.robot.commands.SetHoodCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
+import frc.robot.utils.Limelight;
+import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
 
 import frc.robot.utils.JoystickAxes.DeadzoneMode;
@@ -40,13 +48,16 @@ public class RobotContainer {
     private XBoxController m_operatorController = new XBoxController(1);
     
     // The robot's subsystems and commands are defined here...
-    Climber m_climber = new Climber();
-    Drivetrain m_drivetrain = new Drivetrain();
-    Intake m_intake = new Intake();
+    private Climber m_climber = new Climber();
+    private Drivetrain m_drivetrain = new Drivetrain();
+    private Intake m_intake = new Intake();
+    private Shooter m_shooter = new Shooter(m_intake);
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+        Limelight.setLEDMode(Limelight.LEDMode.OFF);
+
         // Configure the button bindings
         NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
         configureButtonBindings();
@@ -136,6 +147,27 @@ public class RobotContainer {
                                 return 0.5;
                             })
                         );
+
+        m_driveController.getTrigger(Triggers.LEFT_TRIGGER)
+                        .whileActiveContinuous(
+                            new AimShootCommand(m_shooter, m_intake, m_drivetrain, new PIDController(0.01, 0.0, 0.0))
+                        );
+
+        m_driveController.getTrigger(Triggers.RIGHT_TRIGGER)
+                        .and(m_driveController.getPOV().negate())
+                        .whileActiveContinuous(
+                            new ShootCommand(m_shooter, m_intake)
+                        );
+
+        m_driveController.getPOV()
+                        .whenActive(
+                            new SetHoodCommand(m_shooter, m_driveController), false
+                        );
+
+        m_driveController.getButton(Buttons.BACK_BUTTON)
+                        .whenActive(
+                            new FixHoodCommand(m_shooter), false
+                        );
     }
 
     /**
@@ -146,5 +178,17 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
         return new Terminal2Ball(m_drivetrain);
+    }
+    
+    public Climber getClimber(){
+        return m_climber;
+    }
+
+    public Drivetrain getDrivetrain(){
+        return m_drivetrain;
+    }
+
+    public Intake getIntake(){
+        return m_intake;
     }
 }

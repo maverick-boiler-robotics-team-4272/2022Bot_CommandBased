@@ -33,6 +33,9 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
+
+        addPeriodic(m_robotContainer.getDrivetrain()::updateModules, 1.0);
+
     }
 
     /**
