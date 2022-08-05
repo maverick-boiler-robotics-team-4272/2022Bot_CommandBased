@@ -4,13 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.commands.AimShootCommand;
 import frc.robot.commands.ClimberRunCommand;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.FixHoodCommand;
 import frc.robot.commands.IntakeRunCommand;
+import frc.robot.commands.SetHoodCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -138,6 +143,27 @@ public class RobotContainer {
                             new IntakeRunCommand(m_intake, false, () -> {
                                 return 0.5;
                             })
+                        );
+
+        m_driveController.getTrigger(Triggers.LEFT_TRIGGER)
+                        .whileActiveContinuous(
+                            new AimShootCommand(m_shooter, m_intake, m_drivetrain, new PIDController(0.01, 0.0, 0.0))
+                        );
+
+        m_driveController.getTrigger(Triggers.RIGHT_TRIGGER)
+                        .and(m_driveController.getPOV().negate())
+                        .whileActiveContinuous(
+                            new ShootCommand(m_shooter, m_intake)
+                        );
+
+        m_driveController.getPOV()
+                        .whenActive(
+                            new SetHoodCommand(m_shooter, m_driveController), false
+                        );
+
+        m_driveController.getButton(Buttons.BACK_BUTTON)
+                        .whenActive(
+                            new FixHoodCommand(m_shooter), false
                         );
     }
 

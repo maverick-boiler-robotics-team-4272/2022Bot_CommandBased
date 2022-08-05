@@ -5,7 +5,6 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -196,20 +195,8 @@ public class Shooter extends SubsystemBase {
         m_intake.resetBall();
     }
 
-     /**
-     * Pushes the hood down until it hits the limit switch to 0 it
-     */
-    public boolean fixHood(){
-
-        if(!m_hoodMotor.getForwardLimitSwitch(Type.kNormallyOpen).isPressed()){
-            m_hoodMotor.set(0.1);
-            return true;
-        }else{
-            m_hoodMotor.getEncoder().setPosition(0);
-            setShooter(ShooterPositions.EJECT);
-            return false;//return false once done
-        }
-
+    public CANSparkMax getHoodMotor(){
+        return m_hoodMotor;
     }
 
     /**
