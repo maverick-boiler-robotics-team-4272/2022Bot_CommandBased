@@ -58,6 +58,9 @@ public class XBoxController {
 
     private JoystickAxes m_leftStick;
     private JoystickAxes m_rightStick;
+
+    private JoystickPOV m_dPad;
+
     public XBoxController(int port){
         m_controller = new XboxController(port);
 
@@ -80,6 +83,8 @@ public class XBoxController {
 
         m_leftStick = new JoystickAxes(m_controller, kLeftX.value, kLeftY.value, JOYSTICK_DEADZONE);
         m_rightStick = new JoystickAxes(m_controller, kRightX.value, kRightY.value, JOYSTICK_DEADZONE);
+
+        m_dPad = new JoystickPOV(m_controller, 0);
     }
 
     public JoystickButton getButton(Buttons button){
@@ -129,5 +134,9 @@ public class XBoxController {
             default:
                 return null;
         }
+    }
+
+    public JoystickPOV getPOV(){
+        return m_dPad;
     }
 }

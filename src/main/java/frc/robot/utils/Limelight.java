@@ -89,7 +89,7 @@ public class Limelight {
     /**
      * @return Whether or not the limelight is aimed at the goal
      */
-    public boolean getAimed(){
+    static public boolean getAimed(){
         return Math.abs(getTX()) < LIMELIGHT_DEADZONE && getValidTarget();
     }
 
@@ -97,7 +97,7 @@ public class Limelight {
      * Computes a flywheel speed based on three prededtermined points
      * @return flywheel speed
      */
-    public double getFlywheelSpeed(){
+    static public double getFlywheelSpeed(){
         return speedCalibration.getCalibratedValue(getTY());
     }
 
@@ -105,14 +105,14 @@ public class Limelight {
      * Computes a hood angle based on three predetermined points
      * @return hood angle
      */
-    public double getHoodAngle(){
+    static public double getHoodAngle(){
         return hoodCalibration.getCalibratedValue(getTY());
     }
 
     /**
      * Updates the calibration values with values from Shuffleboard
      */
-    public void updateCalibration(){
+    static public void updateCalibration(){
         PHI_A = m_sTable.getNumber("Phi A");
         PHI_B = m_sTable.getNumber("Phi B");
         PHI_C = m_sTable.getNumber("Phi C");
@@ -132,7 +132,7 @@ public class Limelight {
     /**
      * Initial setup of the dashboard
      */
-    public void setupDashboard(){
+    static public void setupDashboard(){
         m_sTable.putNumber("Phi A", PHI_A).withPosition(0, 0);
         m_sTable.putNumber("Phi B", PHI_B).withPosition(0, 1);
         m_sTable.putNumber("Phi C", PHI_C).withPosition(0, 2);
@@ -145,7 +145,7 @@ public class Limelight {
         m_sTable.putNumber("Omega B", OMEGA_B).withPosition(2, 1);
         m_sTable.putNumber("Omega C", OMEGA_C).withPosition(2, 2);
 
-        m_sTable.putData("Update", new InstantCommand(this::updateCalibration)).withPosition(1, 3);
+        m_sTable.putData("Update", new InstantCommand(Limelight::updateCalibration)).withPosition(1, 3);
 
         m_sTable.putNumber("Phi", getTY()).withPosition(4, 0);
     }

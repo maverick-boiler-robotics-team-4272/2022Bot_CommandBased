@@ -9,11 +9,12 @@ import com.revrobotics.SparkMaxLimitSwitch.Type;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.ShuffleboardTable;
 
 import static frc.robot.Constants.*;
 
-public class Shooter {
+public class Shooter extends SubsystemBase {
 
     private static final double HOOD_DEADZONE = 0.025;
     private static final double SHOOTER_DEADZONE = 50.0;

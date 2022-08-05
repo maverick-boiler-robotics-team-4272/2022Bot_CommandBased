@@ -131,4 +131,11 @@ public class Drivetrain extends SubsystemBase {
         m_backLeftModule.updateRotation();
         m_backRightModule.updateRotation();
     }
+
+    public void xConfig(){
+        m_frontLeftModule.setState(new SwerveModuleState(0.01, Rotation2d.fromDegrees(315)));
+        m_frontRightModule.setState(new SwerveModuleState(0.01, Rotation2d.fromDegrees(45)));
+        m_backRightModule.setState(new SwerveModuleState(0.01, Rotation2d.fromDegrees(135)));
+        m_backLeftModule.setState(new SwerveModuleState(0.01, Rotation2d.fromDegrees(225)));
+    }
 }
