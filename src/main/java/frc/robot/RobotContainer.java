@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -25,7 +24,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
 import frc.robot.utils.Limelight;
-import frc.robot.utils.Utils;
 import frc.robot.utils.XBoxController;
 
 import frc.robot.utils.JoystickAxes.DeadzoneMode;
@@ -59,7 +57,6 @@ public class RobotContainer {
         Limelight.setLEDMode(Limelight.LEDMode.OFF);
 
         // Configure the button bindings
-        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
         configureButtonBindings();
     }
 

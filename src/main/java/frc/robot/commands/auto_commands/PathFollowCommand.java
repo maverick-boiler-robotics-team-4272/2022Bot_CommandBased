@@ -82,19 +82,14 @@ public class PathFollowCommand extends CommandBase{
             PathPlannerTrajectory trajectory,
             Supplier<Pose2d> pose,
             SwerveDriveKinematics kinematics,
-            PIDController xController,
-            PIDController yController,
-            ProfiledPIDController thetaController,
+            HolonomicDriveController controller,
             Consumer<SwerveModuleState[]> outputModuleStates,
             Subsystem... requirements) {
         m_trajectory = trajectory;
         m_pose = pose;
         m_kinematics = kinematics;
 
-        m_controller = new HolonomicDriveController(
-                xController,
-                yController,
-                thetaController);
+        m_controller = controller;
 
         m_outputModuleStates = outputModuleStates;
 
