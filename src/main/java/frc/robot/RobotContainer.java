@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.commands.AimShootCommand;
@@ -14,9 +15,9 @@ import frc.robot.commands.ClimberRunCommand;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.FixHoodCommand;
 import frc.robot.commands.IntakeRunCommand;
-import frc.robot.commands.auto_commands.Terminal2Ball;
 import frc.robot.commands.SetHoodCommand;
 import frc.robot.commands.ShootCommand;
+import frc.robot.commands.auto_commands.AutoCommand.Paths;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -24,6 +25,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
 import frc.robot.utils.Limelight;
+import frc.robot.utils.ShuffleboardTable;
 import frc.robot.utils.XBoxController;
 
 import frc.robot.utils.JoystickAxes.DeadzoneMode;
@@ -41,6 +43,8 @@ import frc.robot.utils.XBoxController.Triggers;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    private SendableChooser<Paths> m_autoChooser = new SendableChooser<>();
+
     // The robot's controllers are defined here...
     private XBoxController m_driveController = new XBoxController(0);
     private XBoxController m_operatorController = new XBoxController(1);
@@ -55,7 +59,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
         Limelight.setLEDMode(Limelight.LEDMode.OFF);
-
+        initAutoSendable();
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -167,6 +171,18 @@ public class RobotContainer {
                         );
     }
 
+    private void initAutoSendable(){
+        Paths[] paths = Paths.values();
+
+        for(Paths path : paths){
+            m_autoChooser.addOption(path.name(), path);
+        }
+
+        m_autoChooser.setDefaultOption("TERMINAL_2_BALL", Paths.TERMINAL_2_BALL);
+
+        ShuffleboardTable.getTable("Game Data").putData("Auto Chooser", m_autoChooser);
+    }
+
     /**
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
@@ -174,7 +190,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return new Terminal2Ball(m_drivetrain);
+        return m_autoChooser.getSelected().m_creator.create(m_shooter, m_intake, m_drivetrain);
     }
     
     public Climber getClimber(){
@@ -187,5 +203,9 @@ public class RobotContainer {
 
     public Intake getIntake(){
         return m_intake;
+    }
+
+    public Shooter getShooter(){
+        return m_shooter;
     }
 }
