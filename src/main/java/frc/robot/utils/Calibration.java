@@ -1,6 +1,9 @@
 package frc.robot.utils;
 
-public class Calibration {
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+
+public class Calibration implements Sendable {
     private double m_inputA;
     private double m_inputB;
     private double m_inputC;
@@ -36,5 +39,68 @@ public class Calibration {
         m_outputB = outputB;
         m_outputC = outputC;
         computeCoefficients();
+    }
+
+    public void setInputA(double inputA) {
+        m_inputA = inputA;
+    }
+
+    public double getInputA() {
+        return m_inputA;
+    }
+
+    public void setInputB(double inputB) {
+        m_inputB = inputB;
+    }
+
+    public double getInputB() {
+        return m_inputB;
+    }
+
+    public void setInputC(double outputC) {
+        m_outputC = outputC;
+    }
+
+    public double getInputC() {
+        return m_inputC;
+    }
+
+    public double getOutputA() {
+        return m_outputA;
+    }
+
+    public void setOutputA(double outputA) {
+        m_outputA = outputA;
+    }
+
+    public double getOutputB() {
+        return m_outputB;
+    }
+
+    public void setOutputB(double outputB) {
+        m_outputB = outputB;
+    }
+
+    public double getOutputC() {
+        return m_outputC;
+    }
+
+    public void setOutputC(double outputC) {
+        m_outputC = outputC;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Input A", this::getInputA, this::setInputA);
+        builder.addDoubleProperty("Input B", this::getInputB, this::setInputB);
+        builder.addDoubleProperty("Input C", this::getInputC, this::setInputC);
+
+        builder.addDoubleProperty("Output A", this::getOutputA, this::setOutputA);
+        builder.addDoubleProperty("Output B", this::getOutputB, this::setOutputB);
+        builder.addDoubleProperty("Output C", this::getOutputC, this::setOutputC);
+
+        builder.addBooleanProperty("Update", null, value -> {
+            this.computeCoefficients();
+        });
     }
 }
