@@ -21,6 +21,13 @@ public class ShootCommand extends CommandBase {
     }
 
     @Override
+    public void end(boolean interrupted) {
+        m_shooter.stopShooter();
+        m_intake.stopIntake();
+        m_intake.stopFeedShooter();
+    }
+
+    @Override
     public boolean isFinished() {
         return !m_intake.ballPresent();
     }

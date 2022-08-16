@@ -43,6 +43,8 @@ import frc.robot.utils.XBoxController.Triggers;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+    private static final ShuffleboardTable m_testingTab = ShuffleboardTable.getTable("Testing");
+
     private SendableChooser<Paths> m_autoChooser = new SendableChooser<>();
 
     // The robot's controllers are defined here...
@@ -113,6 +115,8 @@ public class RobotContainer {
 
         driveLeftStick.setMode(DeadzoneMode.MAGNITUDE);
         driveRightStick.setMode(DeadzoneMode.X_AXIS);
+        driveLeftStick.setPowerScaling(2.0);
+        driveRightStick.setPowerScaling(2.0);
 
         driveLeftStick.or(driveRightStick)
                     .whileActiveContinuous(
@@ -148,17 +152,23 @@ public class RobotContainer {
                                 return 0.5;
                             })
                         );
+        
 
+        AimShootCommand aimCommand = new AimShootCommand(m_shooter, m_intake, m_drivetrain, new PIDController(0.01, 0.0, 0.0));
         m_driveController.getTrigger(Triggers.LEFT_TRIGGER)
-                        .whileActiveContinuous(
-                            new AimShootCommand(m_shooter, m_intake, m_drivetrain, new PIDController(0.01, 0.0, 0.0))
+                        .whileActiveOnce(
+                            aimCommand
                         );
 
+        ShootCommand shootCommand = new ShootCommand(m_shooter, m_intake);
         m_driveController.getTrigger(Triggers.RIGHT_TRIGGER)
                         .and(m_driveController.getPOV().negate())
-                        .whileActiveContinuous(
-                            new ShootCommand(m_shooter, m_intake)
+                        .whileActiveOnce(
+                            shootCommand
                         );
+
+        m_testingTab.putData("Stop Shoot Command", new InstantCommand(shootCommand::cancel));
+        m_testingTab.putData("Stop Aim Shoot Command", new InstantCommand(aimCommand::cancel));
 
         m_driveController.getPOV()
                         .whenActive(

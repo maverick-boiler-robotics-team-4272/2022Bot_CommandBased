@@ -22,7 +22,7 @@ public class SwerveModule {
     private static final double DRIVE_P = 0.003596;
     private static final double DRIVE_I = 0.0;
     private static final double DRIVE_D = 0.0;
-    private static final double DRIVE_F = 1.0;
+    private static final double DRIVE_F = 0.235;
 
     private static final double STEER_P = 0.01;
     private static final double STEER_I = 0.0001;
@@ -74,7 +74,7 @@ public class SwerveModule {
         init();
     }
     private double getEncoderPosition(){
-        return (m_externalRotationEncoder.getAbsolutePosition() - m_offset) * m_flipped;
+        return Utils.euclideanModulo((m_externalRotationEncoder.getAbsolutePosition() - m_offset) * m_flipped, 360.0);
     }
 
     /**
@@ -140,29 +140,6 @@ public class SwerveModule {
         double encoderPosition = getEncoderPosition();
         if(Math.abs(Utils.euclideanModulo(m_rotationEncoder.getPosition(), 360.0) - encoderPosition) > MODULE_ROTATION_DEADZONE){
             m_rotationEncoder.setPosition(encoderPosition);
-            String moduleName;
-            switch(m_id){
-                case 1:
-                    moduleName = "Front Left";
-                    break;
-                
-                case 2:
-                    moduleName = "Front Right";
-                    break;
-
-                case 3:
-                    moduleName = "Back Left";
-                    break;
-
-                case 4:
-                    moduleName = "Back Right";
-                    break;
-                
-                default:
-                    moduleName = "A";
-            }
-
-            System.out.println(moduleName + " module needed updating.");
         }
     }
 

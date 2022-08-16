@@ -16,6 +16,7 @@ public class JoystickAxes extends Trigger {
     private int m_xPort;
     private int m_yPort;
     private double m_deadzone;
+    private double m_power = 1;
 
     private DeadzoneMode m_mode = DeadzoneMode.MAGNITUDE;
 
@@ -24,6 +25,10 @@ public class JoystickAxes extends Trigger {
         m_xPort = xAxis;
         m_yPort = yAxis;
         m_deadzone = deadzone;
+    }
+
+    private double powerScale(double input){
+        return Math.signum(input) * Math.pow(input, m_power);
     }
 
     public double getRawXAxis(){
@@ -76,9 +81,18 @@ public class JoystickAxes extends Trigger {
         return m_mode;
     }
 
+    public double getPowerScaling(){
+        return m_power;
+    }
+
+    public void setPowerScaling(double power){
+        m_power = power;
+    }
+
     public double getDeadzonedMagnitude(){
         double mag = Math.hypot(getRawXAxis(), getRawYAxis());
-        return deadzoneEquations(mag, m_deadzone);
+        mag = deadzoneEquations(mag, m_deadzone);
+        return powerScale(mag);
     }
 
     private double getAngle(){
@@ -96,7 +110,7 @@ public class JoystickAxes extends Trigger {
             case MAGNITUDE:
                 return getDeadzonedMagnitude() * Math.cos(getAngle());
             case X_AXIS:
-                return deadzoneEquations(getRawXAxis(), m_deadzone);
+                return powerScale(deadzoneEquations(getRawXAxis(), m_deadzone));
             default:
                 return 0.0;
         }
@@ -113,7 +127,7 @@ public class JoystickAxes extends Trigger {
             case MAGNITUDE:
                 return getDeadzonedMagnitude() * Math.sin(getAngle());
             case Y_AXIS:
-                return deadzoneEquations(getRawYAxis(), m_deadzone);
+                return powerScale(deadzoneEquations(getRawYAxis(), m_deadzone));
             default:
                 return 0.0;
         }

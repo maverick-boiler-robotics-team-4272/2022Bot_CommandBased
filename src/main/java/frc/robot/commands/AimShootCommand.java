@@ -43,10 +43,8 @@ public class AimShootCommand extends ShootCommand {
 
     @Override
     public void end(boolean interrupted) {
+        super.end(interrupted);
         Limelight.setLEDMode(LEDMode.OFF);
         m_drivetrain.drive(0.0, 0.0, 0.0);
-        m_shooter.stopShooter();
-        m_intake.stopIntake();
-        m_intake.stopFeedShooter();
     }
 }

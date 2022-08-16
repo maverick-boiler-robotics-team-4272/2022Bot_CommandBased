@@ -83,7 +83,7 @@ public class Limelight {
      * @return Whether or not the limelight is aimed at a valid target
      */
     public static boolean getValidTarget(){
-        return ((int) m_table.getEntry("tv").getNumber(0)) != 0;
+        return (Math.round((double) m_table.getEntry("tv").getNumber(0))) != 0;
     }
 
     /**
