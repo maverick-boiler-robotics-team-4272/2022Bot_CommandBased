@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 
 public class Limelight {
@@ -49,7 +50,7 @@ public class Limelight {
     private Limelight() {}
 
     public static void setLEDMode(LEDMode mode){
-        m_table.getEntry("ledMode").setNumber(mode.m_mode);
+        m_table.getEntry("ledMode").setDouble(mode.m_mode);
     }
 
     /**
@@ -82,7 +83,7 @@ public class Limelight {
      * @return Whether or not the limelight is aimed at a valid target
      */
     public static boolean getValidTarget(){
-        return (Math.round((double) m_table.getEntry("tv").getNumber(0))) != 0;
+        return (Math.round(m_table.getEntry("tv").getDouble(0.0))) != 0;
     }
 
     /**
@@ -109,12 +110,43 @@ public class Limelight {
     }
 
     /**
+     * Updates the calibration values with values from Shuffleboard
+     */
+    static public void updateCalibration(){
+        PHI_A = m_sTable.getNumber("Phi A");
+        PHI_B = m_sTable.getNumber("Phi B");
+        PHI_C = m_sTable.getNumber("Phi C");
+
+        THETA_A = m_sTable.getNumber("Theta A");
+        THETA_B = m_sTable.getNumber("Theta B");
+        THETA_C = m_sTable.getNumber("Theta C");
+
+        OMEGA_A = m_sTable.getNumber("Omega A");
+        OMEGA_B = m_sTable.getNumber("Omega B");
+        OMEGA_C = m_sTable.getNumber("Omega C");
+
+        hoodCalibration.setValues(PHI_A, PHI_B, PHI_C, THETA_A, THETA_B, THETA_C);
+        speedCalibration.setValues(PHI_A, PHI_B, PHI_C, OMEGA_A, OMEGA_B, OMEGA_C);
+    }
+
+    /**
      * Initial setup of the dashboard
      */
     static public void setupDashboard(){
-        m_sTable.putData("Hood Calibration", hoodCalibration);
-        m_sTable.putData("Speed Calibration", speedCalibration);
+        m_sTable.putNumber("Phi A", PHI_A).withPosition(0, 0);
+        m_sTable.putNumber("Phi B", PHI_B).withPosition(0, 1);
+        m_sTable.putNumber("Phi C", PHI_C).withPosition(0, 2);
 
-        m_sTable.putNumber("Phi", getTY());
+        m_sTable.putNumber("Theta A", THETA_A).withPosition(1, 0);
+        m_sTable.putNumber("Theta B", THETA_B).withPosition(1, 1);
+        m_sTable.putNumber("Theta C", THETA_C).withPosition(1, 2);
+
+        m_sTable.putNumber("Omega A", OMEGA_A).withPosition(2, 0);
+        m_sTable.putNumber("Omega B", OMEGA_B).withPosition(2, 1);
+        m_sTable.putNumber("Omega C", OMEGA_C).withPosition(2, 2);
+
+        m_sTable.putData("Update", new InstantCommand(Limelight::updateCalibration)).withPosition(1, 3);
+
+        m_sTable.putNumber("Phi", getTY()).withPosition(4, 0);
     }
 }

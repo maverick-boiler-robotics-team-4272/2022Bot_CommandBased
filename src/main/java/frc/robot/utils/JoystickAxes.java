@@ -28,7 +28,7 @@ public class JoystickAxes extends Trigger {
     }
 
     private double powerScale(double input){
-        return Math.signum(input) * Math.pow(input, m_power);
+        return Math.signum(input) * Math.pow(Math.abs(input), m_power);
     }
 
     public double getRawXAxis(){

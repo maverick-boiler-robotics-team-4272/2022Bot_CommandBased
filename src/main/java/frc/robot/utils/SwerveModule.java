@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +15,8 @@ import edu.wpi.first.math.util.Units;
 import static frc.robot.Constants.*;
 
 public class SwerveModule {
+    private static final ShuffleboardTable m_table = ShuffleboardTable.getTable("Modules");
+
     private static final double WHEEL_RADIUS = 2.0;
     private static final double DRIVE_RATIO = 6.75;
     private static final double STEER_RATIO = 150.0 / 7.0;
@@ -22,7 +25,7 @@ public class SwerveModule {
     private static final double DRIVE_P = 0.003596;
     private static final double DRIVE_I = 0.0;
     private static final double DRIVE_D = 0.0;
-    private static final double DRIVE_F = 0.235;
+    private static final double DRIVE_F = 0.47;
 
     private static final double STEER_P = 0.01;
     private static final double STEER_I = 0.0001;
@@ -66,6 +69,9 @@ public class SwerveModule {
         m_rotationPidController.setI(STEER_I);
         m_rotationPidController.setD(STEER_D);
         m_rotationPidController.setFF(STEER_F);
+
+        m_driveMotor.setIdleMode(IdleMode.kBrake);
+        m_rotationMotor.setIdleMode(IdleMode.kBrake);
 
         // m_driveMotor.burnFlash();
         // m_rotationMotor.burnFlash();
@@ -138,8 +144,16 @@ public class SwerveModule {
 
     public void updateRotation(){
         double encoderPosition = getEncoderPosition();
-        if(Math.abs(Utils.euclideanModulo(m_rotationEncoder.getPosition(), 360.0) - encoderPosition) > MODULE_ROTATION_DEADZONE){
-            m_rotationEncoder.setPosition(encoderPosition);
+        double rotationPosition = Utils.euclideanModulo(m_rotationEncoder.getPosition(), 360.0);
+
+        m_table.putNumber("Encoder Position " + m_id, encoderPosition);
+        m_table.putNumber("Rotation Position" + m_id, rotationPosition);
+
+        if(Math.abs(rotationPosition - encoderPosition) > MODULE_ROTATION_DEADZONE){
+            m_rotationEncoder.setPosition(getEncoderPosition());
+            m_table.putBoolean("Updated " + m_id, true);
+        } else {
+            m_table.putBoolean("Updated " + m_id, false);
         }
     }
 

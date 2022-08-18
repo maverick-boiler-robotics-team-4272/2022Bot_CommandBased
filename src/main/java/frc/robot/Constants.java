@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import frc.robot.utils.ShuffleboardTable;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -20,4 +22,5 @@ public final class Constants {
 
     public static final double VOLTAGE_COMPENSATION = 11.0;
     
+    public static final ShuffleboardTable TESTING_TABLE = ShuffleboardTable.getTable("Testing");
 }

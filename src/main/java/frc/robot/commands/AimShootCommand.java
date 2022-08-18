@@ -7,6 +7,8 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.Limelight.LEDMode;
 
+import static frc.robot.Constants.TESTING_TABLE;;
+
 public class AimShootCommand extends ShootCommand {
     private Drivetrain m_drivetrain;
     private PIDController m_controller;
@@ -23,6 +25,7 @@ public class AimShootCommand extends ShootCommand {
 
     @Override
     public void initialize() {
+        super.initialize();
         Limelight.setLEDMode(LEDMode.ON);
     }
     
@@ -31,8 +34,11 @@ public class AimShootCommand extends ShootCommand {
         m_shooter.setShooter(Limelight.getFlywheelSpeed(), Limelight.getHoodAngle(), -0.8);
         m_shooter.setHood();
 
+        TESTING_TABLE.putBoolean("Limelight Aimed", Limelight.getAimed());
+
         if(Limelight.getAimed()){
             m_shooter.shoot();
+            m_drivetrain.xConfig();
         } else {
             m_shooter.revShooter();
             

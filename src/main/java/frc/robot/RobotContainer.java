@@ -33,6 +33,8 @@ import frc.robot.utils.XBoxController.Axes;
 import frc.robot.utils.XBoxController.Buttons;
 import frc.robot.utils.XBoxController.Triggers;
 
+// import static frc.robot.Constants.TESTING_TABLE;
+
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -43,8 +45,6 @@ import frc.robot.utils.XBoxController.Triggers;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-    private static final ShuffleboardTable m_testingTab = ShuffleboardTable.getTable("Testing");
-
     private SendableChooser<Paths> m_autoChooser = new SendableChooser<>();
 
     // The robot's controllers are defined here...
@@ -115,8 +115,8 @@ public class RobotContainer {
 
         driveLeftStick.setMode(DeadzoneMode.MAGNITUDE);
         driveRightStick.setMode(DeadzoneMode.X_AXIS);
-        driveLeftStick.setPowerScaling(2.0);
-        driveRightStick.setPowerScaling(2.0);
+        driveLeftStick.setPowerScaling(3.0);
+        driveRightStick.setPowerScaling(2.5);
 
         driveLeftStick.or(driveRightStick)
                     .whileActiveContinuous(
@@ -153,22 +153,21 @@ public class RobotContainer {
                             })
                         );
         
-
-        AimShootCommand aimCommand = new AimShootCommand(m_shooter, m_intake, m_drivetrain, new PIDController(0.01, 0.0, 0.0));
         m_driveController.getTrigger(Triggers.LEFT_TRIGGER)
                         .whileActiveOnce(
-                            aimCommand
+                            new AimShootCommand(
+                                m_shooter,
+                                m_intake,
+                                m_drivetrain,
+                                new PIDController(0.0025, 0.0, 0.0)
+                            )
                         );
 
-        ShootCommand shootCommand = new ShootCommand(m_shooter, m_intake);
         m_driveController.getTrigger(Triggers.RIGHT_TRIGGER)
                         .and(m_driveController.getPOV().negate())
                         .whileActiveOnce(
-                            shootCommand
+                            new ShootCommand(m_shooter, m_intake)
                         );
-
-        m_testingTab.putData("Stop Shoot Command", new InstantCommand(shootCommand::cancel));
-        m_testingTab.putData("Stop Aim Shoot Command", new InstantCommand(aimCommand::cancel));
 
         m_driveController.getPOV()
                         .whenActive(
@@ -179,6 +178,11 @@ public class RobotContainer {
                         .whenActive(
                             new FixHoodCommand(m_shooter), false
                         );
+
+        m_operatorController.getButton(Buttons.B_BUTTON)
+                            .whenActive(
+                                m_intake::toggleIntakePneumatic, m_intake
+                            );
     }
 
     private void initAutoSendable(){

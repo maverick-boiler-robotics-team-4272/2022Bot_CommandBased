@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.Limelight;
+import frc.robot.utils.Limelight.LEDMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,7 +36,10 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        addPeriodic(m_robotContainer.getDrivetrain()::updateModules, 1.0);
+        Limelight.setLEDMode(LEDMode.OFF);
+        Limelight.setupDashboard();
+
+        // addPeriodic(m_robotContainer.getDrivetrain()::updateModules, 1.0);
 
     }
 
