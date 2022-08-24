@@ -1,22 +1,17 @@
 //Changed Slightly from the Path planner swerve follow command to allow pausing and restarting the timer
 package frc.robot.commands.auto_commands;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.robot.subsystems.Drivetrain;
 
-@SuppressWarnings("MemberName")
 public class PathFollowCommand extends CommandBase{
 
 
@@ -43,11 +38,12 @@ public class PathFollowCommand extends CommandBase{
  */
     private final Timer m_timer = new Timer();
     private boolean m_timerPaused = true;
+    private boolean m_stopped = false;
     private final PathPlannerTrajectory m_trajectory;
-    private final Supplier<Pose2d> m_pose;
-    private final SwerveDriveKinematics m_kinematics;
-    private final HolonomicDriveController m_controller;
-    private final Consumer<SwerveModuleState[]> m_outputModuleStates;
+    private final PIDController m_xPidController;
+    private final PIDController m_yPidController;
+    private final ProfiledPIDController m_thetaPidController;
+    private final Drivetrain m_drivetrain;
 
     /**
      * Constructs a new PPSwerveControllerCommand that when executed will follow the
@@ -80,56 +76,59 @@ public class PathFollowCommand extends CommandBase{
     @SuppressWarnings("ParameterName")
     public PathFollowCommand(
             PathPlannerTrajectory trajectory,
-            Supplier<Pose2d> pose,
-            SwerveDriveKinematics kinematics,
-            HolonomicDriveController controller,
-            Consumer<SwerveModuleState[]> outputModuleStates,
-            Subsystem... requirements) {
+            PIDController xPid,
+            PIDController yPid,
+            ProfiledPIDController thetaPid,
+            Drivetrain drivetrain) {
         m_trajectory = trajectory;
-        m_pose = pose;
-        m_kinematics = kinematics;
+        m_drivetrain = drivetrain;
+        m_xPidController = xPid;
+        m_yPidController = yPid;
+        m_thetaPidController = thetaPid;
 
-        m_controller = controller;
-
-        m_outputModuleStates = outputModuleStates;
-
-        addRequirements(requirements);
+        addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
+        m_drivetrain.setRobotPose(m_trajectory.getInitialPose());
+        m_drivetrain.setPigeonHeading(m_trajectory.getInitialPose().getRotation());
+
         m_timer.reset();
         m_timer.start();
         m_timerPaused = false;
+        m_stopped = false;
     }
 
     @Override
     @SuppressWarnings("LocalVariableName")
     public void execute() {
-        if(m_timerPaused){
-            SwerveModuleState[] states = {
-                new SwerveModuleState(),
-                new SwerveModuleState(),
-                new SwerveModuleState(),
-                new SwerveModuleState()
-            };
-            
-            m_outputModuleStates.accept(states);
+        if(m_timerPaused) {
+            if(!m_stopped){
+                m_stopped = true;
+                m_drivetrain.drive(0.0, 0.0, 0.0);
+            }
             return;
         }
+
+        if(m_stopped) m_stopped = false;
         double curTime = m_timer.get();
-        var desiredState = (PathPlannerState) m_trajectory.sample(curTime);
+        PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(curTime);
+        Pose2d desiredPose = new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation);
+        Pose2d currentPose = m_drivetrain.getRobotPose();
 
-        var targetChassisSpeeds = m_controller.calculate(m_pose.get(), desiredState, desiredState.holonomicRotation);
-        var targetModuleStates = m_kinematics.toSwerveModuleStates(targetChassisSpeeds);
+        double xSpeed = m_xPidController.calculate(currentPose.getX(), desiredPose.getX());
+        double ySpeed = m_yPidController.calculate(-currentPose.getY(), -desiredPose.getY());
+        double thetaSpeed = m_thetaPidController.calculate(currentPose.getRotation().getRadians(), desiredPose.getRotation().getRadians());
 
-        m_outputModuleStates.accept(targetModuleStates);
+        m_drivetrain.drive(ySpeed, xSpeed, thetaSpeed);
     }
 
     @Override
     public void end(boolean interrupted) {
         m_timer.stop();
         m_timerPaused = true;
+        m_drivetrain.drive(0.0, 0.0, 0.0);
     }
 
     @Override

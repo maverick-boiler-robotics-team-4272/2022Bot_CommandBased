@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,7 +23,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.utils.JoystickAxes;
 import frc.robot.utils.JoystickTrigger;
-import frc.robot.utils.Limelight;
 import frc.robot.utils.ShuffleboardTable;
 import frc.robot.utils.XBoxController;
 
@@ -60,8 +58,8 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        Limelight.setLEDMode(Limelight.LEDMode.OFF);
         initAutoSendable();
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -158,8 +156,7 @@ public class RobotContainer {
                             new AimShootCommand(
                                 m_shooter,
                                 m_intake,
-                                m_drivetrain,
-                                new PIDController(0.0025, 0.0, 0.0)
+                                m_drivetrain
                             )
                         );
 

@@ -10,6 +10,10 @@ import frc.robot.utils.Limelight.LEDMode;
 import static frc.robot.Constants.TESTING_TABLE;;
 
 public class AimShootCommand extends ShootCommand {
+
+    private static final PIDController DEFAULT_CONTROLLER = new PIDController(0.0025, 0.0, 0.0);
+
+
     private Drivetrain m_drivetrain;
     private PIDController m_controller;
 
@@ -21,6 +25,15 @@ public class AimShootCommand extends ShootCommand {
         m_controller.setSetpoint(0.0);
 
         addRequirements(drivetrain);
+    }
+
+    public AimShootCommand(Shooter shooter, Intake intake, Drivetrain drivetrain){
+        this(
+            shooter,
+            intake,
+            drivetrain,
+            DEFAULT_CONTROLLER
+        );
     }
 
     @Override

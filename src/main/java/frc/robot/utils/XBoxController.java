@@ -8,7 +8,7 @@ import static edu.wpi.first.wpilibj.XboxController.Axis.*;
 
 public class XBoxController {
 
-    private static final double JOYSTICK_DEADZONE = 0.15;
+    private static final double JOYSTICK_DEADZONE = 0.1;
     private static final double TRIGGER_DEADZONE = 0.1;
 
     public enum Buttons {

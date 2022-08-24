@@ -175,9 +175,6 @@ public class Intake extends SubsystemBase {
     }
 
     public void shotBall(){
-
-        System.out.println("Ball shot\nB1: " + b1 + "\nB2: "  + b2);
-
         if(b1 && b2){
             b2 = false;
         }else if(b1 && !b2){
@@ -185,7 +182,6 @@ public class Intake extends SubsystemBase {
         }else if(!b1 && b2){
             b2 = false;
         }
-
     }
 
     /**

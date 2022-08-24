@@ -16,7 +16,7 @@ import static frc.robot.Constants.*;
 public class Shooter extends SubsystemBase {
 
     private static final double HOOD_DEADZONE = 0.025;
-    private static final double SHOOTER_DEADZONE = 50.0;
+    private static final double SHOOTER_DEADZONE = 100.0;
 
     private static ShuffleboardTable m_table = ShuffleboardTable.getTable("Shooter");
 
