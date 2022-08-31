@@ -16,7 +16,7 @@ import frc.robot.commands.FixHoodCommand;
 import frc.robot.commands.IntakeRunCommand;
 import frc.robot.commands.SetHoodCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.auto_commands.AutoCommand.Paths;
+import frc.robot.commands.auto_commands.AutoUtils.Paths;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -43,6 +43,7 @@ import frc.robot.utils.XBoxController.Triggers;
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
+
     private SendableChooser<Paths> m_autoChooser = new SendableChooser<>();
 
     // The robot's controllers are defined here...
@@ -189,7 +190,7 @@ public class RobotContainer {
             m_autoChooser.addOption(path.name(), path);
         }
 
-        m_autoChooser.setDefaultOption("TERMINAL_2_BALL", Paths.TERMINAL_2_BALL);
+        m_autoChooser.setDefaultOption("BACK_N_SHOOT", Paths.BACK_N_SHOOT);
 
         ShuffleboardTable.getTable("Game Data").putData("Auto Chooser", m_autoChooser);
     }
@@ -201,7 +202,7 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_autoChooser.getSelected().m_creator.create(m_shooter, m_intake, m_drivetrain);
+        return m_autoChooser.getSelected().creator.create(m_shooter, m_intake, m_drivetrain);
     }
     
     public Climber getClimber(){

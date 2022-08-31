@@ -139,7 +139,9 @@ public class SwerveModule {
      * @return Current state of the module
      */
     public SwerveModuleState getState(){
-        return new SwerveModuleState(m_driveEncoder.getVelocity(), getHeading());
+        Rotation2d heading = getHeading();
+
+        return new SwerveModuleState(-m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
     }
 
     public void updateRotation(){

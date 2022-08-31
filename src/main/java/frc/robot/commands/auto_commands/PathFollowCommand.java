@@ -5,44 +5,31 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.utils.ShuffleboardTable;
 
-public class PathFollowCommand extends CommandBase{
+public class PathFollowCommand extends CommandBase {
 
+    private static final ShuffleboardTable m_table = ShuffleboardTable.getTable("Auto Data");
 
-/**
- * A command that uses two PID controllers ({@link PIDController}) and a
- * ProfiledPIDController
- * ({@link ProfiledPIDController}) to follow a trajectory {@link PathPlannerTrajectory}
- * with a swerve drive.
- *
- * <p>
- * This command outputs the raw desired Swerve Module States
- * ({@link SwerveModuleState}) in an
- * array. The desired wheel and module rotation velocities should be taken from
- * those and used in
- * velocity PIDs.
- *
- * <p>
- * The robot angle controller does not follow the angle given by the trajectory
- * but rather goes
- * to the angle given in the final state of the trajectory.
- *
- * <p>
- * This class is provided by the NewCommands VendorDep
- */
+    private static final PIDController DEFAULT_X_PID = new PIDController(0.05, 0.0, 0.0);
+    private static final PIDController DEFAULT_Y_PID = new PIDController(0.05, 0.0, 0.0);
+    // private static final ProfiledPIDController DEFAULT_THETA_PID = new ProfiledPIDController(
+    //     0.05, 0.0, 0.0, new TrapezoidProfile.Constraints(Drivetrain.MAX_ANGULAR_SPEED, Drivetrain.MAX_ANGULAR_ACC)
+    // );
+    private static final PIDController DEFAULT_THETA_PID = new PIDController(0.3, 0.0, 0.0);
+
     private final Timer m_timer = new Timer();
     private boolean m_timerPaused = true;
     private boolean m_stopped = false;
     private final PathPlannerTrajectory m_trajectory;
     private final PIDController m_xPidController;
     private final PIDController m_yPidController;
-    private final ProfiledPIDController m_thetaPidController;
+    // private final ProfiledPIDController m_thetaPidController;
+    private final PIDController m_thetaPidController;
     private final Drivetrain m_drivetrain;
 
     /**
@@ -78,7 +65,8 @@ public class PathFollowCommand extends CommandBase{
             PathPlannerTrajectory trajectory,
             PIDController xPid,
             PIDController yPid,
-            ProfiledPIDController thetaPid,
+            // ProfiledPIDController thetaPid,
+            PIDController thetaPid,
             Drivetrain drivetrain) {
         m_trajectory = trajectory;
         m_drivetrain = drivetrain;
@@ -89,10 +77,21 @@ public class PathFollowCommand extends CommandBase{
         addRequirements(drivetrain);
     }
 
+    public PathFollowCommand(
+        PathPlannerTrajectory trajectory,
+        Drivetrain drivetrain) {
+            this(
+                trajectory, DEFAULT_X_PID, DEFAULT_Y_PID, DEFAULT_THETA_PID, drivetrain    
+            );
+        }
+
     @Override
     public void initialize() {
-        m_drivetrain.setRobotPose(m_trajectory.getInitialPose());
-        m_drivetrain.setPigeonHeading(m_trajectory.getInitialPose().getRotation());
+        PathPlannerState initialState = (PathPlannerState) m_trajectory.sample(0.0);
+
+        m_drivetrain.setPigeonHeading(0.0);
+        m_drivetrain.setRobotPose(initialState.poseMeters);
+        m_drivetrain.setPigeonHeading(initialState.holonomicRotation);
 
         m_timer.reset();
         m_timer.start();
@@ -104,24 +103,30 @@ public class PathFollowCommand extends CommandBase{
     @SuppressWarnings("LocalVariableName")
     public void execute() {
         if(m_timerPaused) {
+
             if(!m_stopped){
                 m_stopped = true;
                 m_drivetrain.drive(0.0, 0.0, 0.0);
             }
+
             return;
         }
 
         if(m_stopped) m_stopped = false;
+
         double curTime = m_timer.get();
         PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(curTime);
         Pose2d desiredPose = new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation);
         Pose2d currentPose = m_drivetrain.getRobotPose();
 
         double xSpeed = m_xPidController.calculate(currentPose.getX(), desiredPose.getX());
-        double ySpeed = m_yPidController.calculate(-currentPose.getY(), -desiredPose.getY());
-        double thetaSpeed = m_thetaPidController.calculate(currentPose.getRotation().getRadians(), desiredPose.getRotation().getRadians());
+        double ySpeed = m_yPidController.calculate(currentPose.getY(), desiredPose.getY());
+        double thetaSpeed = m_thetaPidController.calculate(m_drivetrain.getPigeonHeading().getRadians(), desiredPose.getRotation().getRadians());
 
-        m_drivetrain.drive(ySpeed, xSpeed, thetaSpeed);
+        m_table.putNumber("Pigeon Angle", m_drivetrain.getPigeonHeading().getDegrees());
+        m_table.putNumber("Set Angle", desiredPose.getRotation().getDegrees());
+
+        m_drivetrain.driveFieldCoords(-xSpeed, ySpeed, thetaSpeed);
     }
 
     @Override

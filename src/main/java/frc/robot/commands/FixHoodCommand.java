@@ -19,7 +19,7 @@ public class FixHoodCommand extends CommandBase {
 
     @Override
     public void execute() {
-        m_motor.set(0.1);
+        m_motor.set(0.02);
     }
 
     @Override

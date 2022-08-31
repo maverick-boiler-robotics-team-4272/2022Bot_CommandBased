@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.utils.SwerveModule;
 
 public class Drivetrain extends SubsystemBase {
@@ -45,6 +46,14 @@ public class Drivetrain extends SubsystemBase {
 
     public Drivetrain(){
         zeroPigeon();
+    }
+
+    @Override
+    public void periodic() {
+        Pose2d rob = getRobotPose();
+        Constants.TESTING_TABLE.putNumber("X Pose", rob.getX());
+        Constants.TESTING_TABLE.putNumber("Y Pose", rob.getY());
+        Constants.TESTING_TABLE.putNumber("Theta", rob.getRotation().getDegrees());
     }
     
     /**
@@ -119,6 +128,15 @@ public class Drivetrain extends SubsystemBase {
         ChassisSpeeds speeds = m_fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, -xSpeed, rotationSpeed, getPigeonHeading())
                                                : new ChassisSpeeds(ySpeed, -xSpeed, rotationSpeed);
         
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
+        setSwerveModuleStates(states);
+        updateOdometry();
+    }
+
+    public void driveFieldCoords(double xSpeed, double ySpeed, double rotationSpeed){
+        ChassisSpeeds speeds = m_fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getPigeonHeading())
+                                               : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
+
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
         setSwerveModuleStates(states);
         updateOdometry();

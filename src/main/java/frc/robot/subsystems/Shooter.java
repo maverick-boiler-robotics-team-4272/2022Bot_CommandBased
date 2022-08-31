@@ -8,6 +8,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.ShuffleboardTable;
 
@@ -23,16 +25,16 @@ public class Shooter extends SubsystemBase {
     public enum ShooterPositions{
         //shootAmt, hoodAmt, feedAmt
         FENDER_LOW(
-            1500.0, -15.0, -0.75
+            1500.0, -3.0, -0.75
         ),
         FENDER_HIGH(
-            2075.0, -3.5, -0.7 //2250
+            2075.0, -1.0, -0.7 //2250
         ),
         TARMAC(
-            2175.0, -16.0, -0.9 //2300, -12.5
+            2175.0, -4.0, -0.9 //2300, -12.5
         ),
         LAUNCHPAD(
-            2615.0, -20, -0.5
+            2615.0, -5, -0.5
         ),
         EJECT(
             1000.0, 0.0, -0.5
@@ -79,10 +81,10 @@ public class Shooter extends SubsystemBase {
     private double shooterD = 0.0;
     private double shooterFF = 0.000199;//0.0001963
 
-    private double hoodP = 0.0000001;
-    private double hoodI = 0.0;
+    private double hoodP = 0.00001;
+    private double hoodI = 0.00000007;
     private double hoodD = 0.0;
-    private double hoodFF = 0.0001;
+    private double hoodFF = 0.000075;
 
     public Shooter(Intake intake){
 
@@ -110,7 +112,7 @@ public class Shooter extends SubsystemBase {
         m_hoodPIDController.setSmartMotionAllowedClosedLoopError(0.0, 0);
 
         m_hoodMotor.getEncoder().setPosition(0.0);
-        m_hoodMotor.setSmartCurrentLimit(20);
+        m_hoodMotor.setSmartCurrentLimit(40);
         m_shooterMotor.setInverted(true);
         
         m_shooterFollowerMotor.follow(m_shooterMotor, true);
@@ -129,11 +131,33 @@ public class Shooter extends SubsystemBase {
 
         m_shooterMotor.setIdleMode(IdleMode.kCoast);
         m_shooterFollowerMotor.setIdleMode(IdleMode.kCoast);
+        m_hoodMotor.setIdleMode(IdleMode.kBrake);
 
         m_hoodMotor.burnFlash();
         m_shooterMotor.burnFlash();
         m_shooterFollowerMotor.burnFlash();
 
+        m_table.putNumber("Hood P", hoodP);
+        m_table.putNumber("Hood I", hoodI);
+        m_table.putNumber("Hood D", hoodD);
+        m_table.putNumber("Hood F", hoodFF);
+        m_table.putNumber("Hood Setpoint", 0.0);
+        m_table.putData("Push PID", new InstantCommand(() -> {
+            m_hoodPIDController.setP(m_table.getNumber("Hood P"));
+            m_hoodPIDController.setI(m_table.getNumber("Hood I"));
+            m_hoodPIDController.setD(m_table.getNumber("Hood D"));
+            m_hoodPIDController.setFF(m_table.getNumber("Hood F"));
+        }));
+
+        m_table.putData("Push Setpoint", new InstantCommand(() -> {
+            setShooter(0.0, m_table.getNumber("Hood Setpoint"), 0.0);
+        }, this));
+
+        m_table.putData("E-Stop", new InstantCommand(() -> {
+            CommandScheduler.getInstance().cancelAll();
+            m_hoodMotor.set(0.0);
+            m_intake.stopIntake();
+        }));
     }
 
     /**
@@ -323,9 +347,9 @@ public class Shooter extends SubsystemBase {
         m_hoodPIDController.setSmartMotionMinOutputVelocity(0.0, 0);
         m_hoodPIDController.setSmartMotionAllowedClosedLoopError(0.0, 0);
 
-        this.m_hoodMotor.getEncoder().setPosition(0.0);
+        m_hoodMotor.getEncoder().setPosition(0.0);
         m_hoodMotor.setSmartCurrentLimit(20);
-        this.m_shooterMotor.setInverted(true);
+        m_shooterMotor.setInverted(true);
         
         m_shooterFollowerMotor.follow(m_shooterMotor, true);
         m_shooterPIDController.setP(shooterP);
@@ -355,5 +379,11 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.restoreFactoryDefaults(true);
         m_shooterFollowerMotor.restoreFactoryDefaults(true);
 
+    }
+
+    @Override
+    public void periodic() {
+        m_table.putNumber("Hood Actual", m_hoodMotor.getEncoder().getPosition());
+        m_table.putNumber("Hood Curent", m_hoodMotor.getOutputCurrent());
     }
 }
