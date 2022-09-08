@@ -8,58 +8,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.ShuffleboardTable;
+import frc.robot.commands.ShootCommand;
 
 import static frc.robot.Constants.*;
+import static frc.robot.Constants.ShooterConstants.*;
+import static frc.robot.Constants.Tables.SHOOTER_TABLE;
 
 public class Shooter extends SubsystemBase {
-
-    private static final double HOOD_DEADZONE = 0.025;
-    private static final double SHOOTER_DEADZONE = 100.0;
-
-    private static ShuffleboardTable m_table = ShuffleboardTable.getTable("Shooter");
-
-    public enum ShooterPositions{
-        //shootAmt, hoodAmt, feedAmt
-        FENDER_LOW(
-            1500.0, -3.0, -0.75
-        ),
-        FENDER_HIGH(
-            2075.0, -1.0, -0.7 //2250
-        ),
-        TARMAC(
-            2175.0, -4.0, -0.9 //2300, -12.5
-        ),
-        LAUNCHPAD(
-            2615.0, -5, -0.5
-        ),
-        EJECT(
-            1000.0, 0.0, -0.5
-        ),
-        MID_TARMAC(
-            2300.0, -10.0, -0.8
-        ),
-        MID_LAUNCHPAD(
-            2450.0, -16.0, -0.8
-        ),
-        AUTO_TARMAC(
-            2300.0, -15.25, -0.9
-        );
-
-        public final double shootAmt;
-        public final double hoodAmt;
-        public final double feedAmt;
-
-        private ShooterPositions(double shootAmt, double hoodAmt, double feedAmt){
-            this.shootAmt = shootAmt;
-            this.hoodAmt = hoodAmt;
-            this.feedAmt = feedAmt;
-        }
-
-    }
 
     private double m_hoodAmt;
     private double m_shooterAmt;
@@ -137,50 +94,13 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.burnFlash();
         m_shooterFollowerMotor.burnFlash();
 
-        m_table.putNumber("Hood P", hoodP);
-        m_table.putNumber("Hood I", hoodI);
-        m_table.putNumber("Hood D", hoodD);
-        m_table.putNumber("Hood F", hoodFF);
-        m_table.putNumber("Hood Setpoint", 0.0);
-        m_table.putData("Push PID", new InstantCommand(() -> {
-            m_hoodPIDController.setP(m_table.getNumber("Hood P"));
-            m_hoodPIDController.setI(m_table.getNumber("Hood I"));
-            m_hoodPIDController.setD(m_table.getNumber("Hood D"));
-            m_hoodPIDController.setFF(m_table.getNumber("Hood F"));
+        SHOOTER_TABLE.putNumber("Hood Position", 0.0);
+        SHOOTER_TABLE.putNumber("Flywheel Speed", 0.0);
+        SHOOTER_TABLE.putData("Push Data", new InstantCommand(() -> {
+            setShooter(SHOOTER_TABLE.getNumber("Flywheel Speed"), SHOOTER_TABLE.getNumber("Hood Position"), -0.8);
         }));
 
-        m_table.putData("Push Setpoint", new InstantCommand(() -> {
-            setShooter(0.0, m_table.getNumber("Hood Setpoint"), 0.0);
-        }, this));
-
-        m_table.putData("E-Stop", new InstantCommand(() -> {
-            CommandScheduler.getInstance().cancelAll();
-            m_hoodMotor.set(0.0);
-            m_intake.stopIntake();
-        }));
-    }
-
-    /**
-     * Resets pid values
-     */
-    public void resetPID(){
-        
-        
-        // hoodPIDController.setP(SmartDashboard.getNumber("Rotation Motor P", 0.0001));
-        // hoodPIDController.setI(SmartDashboard.getNumber("Rotation Motor I", 0.0));
-        // hoodPIDController.setD(SmartDashboard.getNumber("Rotation Motor D", 0.0));
-        // hoodPIDController.setFF(SmartDashboard.getNumber("Rotation Motor F", 0.001));
-
-        shooterP = m_table.getNumber("Shooter Motor P", shooterP);
-        shooterI = m_table.getNumber("Shooter Motor I", shooterI);
-        shooterD = m_table.getNumber("Shooter Motor D", shooterD);
-        shooterFF = m_table.getNumber("Shooter Motor FF", shooterFF);
-
-        m_shooterPIDController.setP(shooterP);
-        m_shooterPIDController.setI(shooterI);
-        m_shooterPIDController.setD(shooterD);
-        m_shooterPIDController.setFF(shooterFF);
-
+        SHOOTER_TABLE.putData("Run Shooter", new ShootCommand(this, m_intake));
     }
 
     /**
@@ -221,23 +141,6 @@ public class Shooter extends SubsystemBase {
 
     public CANSparkMax getHoodMotor(){
         return m_hoodMotor;
-    }
-
-    /**
-     * Pushes hood and shooter data to Smart Dashboard
-     */
-    public void putShooterDataToDashboard(){
-        m_table.putNumber("Hood Position", m_hoodMotor.getEncoder().getPosition());
-        m_table.putNumber("Hood Error", m_hoodAmt - m_hoodMotor.getEncoder().getPosition());
-        m_table.putNumber("Hood Velocity", m_hoodMotor.getEncoder().getVelocity());
-        m_table.putNumber("Shooter Velocity", m_shooterMotor.getEncoder().getVelocity());
-        m_table.putNumber("Shooter Error", m_shooterAmt - m_shooterMotor.getEncoder().getVelocity());
-        m_table.putNumber("Hood Setpoint", 0.0);
-        m_table.putNumber("Shooter Percent", 0.0);
-        
-        m_table.putNumber("Shooter Setpoint", m_shooterAmt);
-        m_table.putNumber("Hood Setpoint", m_hoodAmt);
-
     }
 
     /**
@@ -294,8 +197,8 @@ public class Shooter extends SubsystemBase {
      */
     public void updateShooter() {
 
-        m_shooterAmt = m_table.getNumber("Shooter Velocity Set", 0.0);
-        m_hoodAmt = m_table.getNumber("Hood Setpoint", 0.0);
+        m_shooterAmt = SHOOTER_TABLE.getNumber("Shooter Velocity Set", 0.0);
+        m_hoodAmt = SHOOTER_TABLE.getNumber("Hood Setpoint", 0.0);
         m_feedAmt = -0.6;
 
     }
@@ -383,7 +286,7 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        m_table.putNumber("Hood Actual", m_hoodMotor.getEncoder().getPosition());
-        m_table.putNumber("Hood Curent", m_hoodMotor.getOutputCurrent());
+        SHOOTER_TABLE.putNumber("Hood Actual Position", m_hoodMotor.getEncoder().getPosition());
+        SHOOTER_TABLE.putNumber("Hood Current", m_hoodMotor.getOutputCurrent());
     }
 }

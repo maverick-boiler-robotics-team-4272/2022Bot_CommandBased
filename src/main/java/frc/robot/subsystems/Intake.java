@@ -11,11 +11,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Lidar;
 
 import static frc.robot.Constants.*;
+import static frc.robot.Constants.IntakeConstants.*;
 
 public class Intake extends SubsystemBase {
-
-    private static int INTAKE_NORM_CURR_LIM = 55;
-    private static int INTAKE_ERROR_CURR_LIM = 80;
 
     //Intake motors, ids 7-10(if needed)
     //Beam breaks are true for unbroke and false for broken

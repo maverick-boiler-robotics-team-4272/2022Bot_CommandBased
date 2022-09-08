@@ -8,13 +8,15 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
+import static frc.robot.Constants.DrivetrainConstants.*;
+
 public class AutoUtils {
     private AutoUtils() {
         throw new UnsupportedOperationException("Cannot construct an AutoUtils instance");
     }
 
     public static PathPlannerTrajectory loadPath(String name){
-        return PathPlanner.loadPath(name, Drivetrain.MAX_LINEAR_SPEED, Drivetrain.MAX_ANGULAR_SPEED);
+        return PathPlanner.loadPath(name, MAX_LINEAR_SPEED, MAX_ANGULAR_SPEED);
     }
 
     public static interface AutoCreator {

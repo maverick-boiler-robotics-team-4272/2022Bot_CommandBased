@@ -7,7 +7,7 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.Limelight.LEDMode;
 
-import static frc.robot.Constants.TESTING_TABLE;;
+import static frc.robot.Constants.Tables.TESTING_TABLE;
 
 public class AimShootCommand extends ShootCommand {
 

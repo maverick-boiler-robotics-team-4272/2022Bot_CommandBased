@@ -9,20 +9,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.utils.SwerveModule;
 
+import static frc.robot.Constants.DrivetrainConstants.*;
+import static frc.robot.Constants.Tables.TESTING_TABLE;
+
 public class Drivetrain extends SubsystemBase {
-    private static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
-
-    public static final double MAX_LINEAR_SPEED = 4.4; // meters per second
-    public static final double MAX_ANGULAR_SPEED = 4.0 * Math.PI;
-    public static final double MAX_LINEAR_ACC = 4.75;
-    public static final double MAX_ANGULAR_ACC = 1.5 * Math.PI;
-
     private final Pigeon2 m_pigeon = new Pigeon2(25);
 
     /**
@@ -51,9 +45,9 @@ public class Drivetrain extends SubsystemBase {
     @Override
     public void periodic() {
         Pose2d rob = getRobotPose();
-        Constants.TESTING_TABLE.putNumber("X Pose", rob.getX());
-        Constants.TESTING_TABLE.putNumber("Y Pose", rob.getY());
-        Constants.TESTING_TABLE.putNumber("Theta", rob.getRotation().getDegrees());
+        TESTING_TABLE.putNumber("X Pose", rob.getX());
+        TESTING_TABLE.putNumber("Y Pose", rob.getY());
+        TESTING_TABLE.putNumber("Theta", rob.getRotation().getDegrees());
     }
     
     /**

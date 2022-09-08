@@ -13,9 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import static frc.robot.Constants.*;
+import static frc.robot.Constants.Tables.MODULE_TABLE;
 
 public class SwerveModule {
-    private static final ShuffleboardTable m_table = ShuffleboardTable.getTable("Modules");
 
     private static final double WHEEL_RADIUS = 2.0;
     private static final double DRIVE_RATIO = 6.75;
@@ -148,14 +148,14 @@ public class SwerveModule {
         double encoderPosition = getEncoderPosition();
         double rotationPosition = Utils.euclideanModulo(m_rotationEncoder.getPosition(), 360.0);
 
-        m_table.putNumber("Encoder Position " + m_id, encoderPosition);
-        m_table.putNumber("Rotation Position" + m_id, rotationPosition);
+        MODULE_TABLE.putNumber("Encoder Position " + m_id, encoderPosition);
+        MODULE_TABLE.putNumber("Rotation Position" + m_id, rotationPosition);
 
         if(Math.abs(rotationPosition - encoderPosition) > MODULE_ROTATION_DEADZONE){
             m_rotationEncoder.setPosition(getEncoderPosition());
-            m_table.putBoolean("Updated " + m_id, true);
+            MODULE_TABLE.putBoolean("Updated " + m_id, true);
         } else {
-            m_table.putBoolean("Updated " + m_id, false);
+            MODULE_TABLE.putBoolean("Updated " + m_id, false);
         }
     }
 
