@@ -5,13 +5,13 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
-import static frc.robot.commands.auto_commands.AutoUtils.Trajectories.TUNE_PATHS;
+import static frc.robot.commands.auto_commands.AutoUtils.Trajectories.THREE_BALL_PATHS;
 
-public class TuneAutoCommand extends SequentialCommandGroup {
-    public TuneAutoCommand(Shooter shooter, Intake intake, Drivetrain drivetrain){
-        super(
+public class ThreeBallCommand extends SequentialCommandGroup {
+    public ThreeBallCommand(Shooter shooter, Intake intake, Drivetrain drivetrain) {
+        addCommands(
             new PathFollowCommand(
-                TUNE_PATHS[0],
+                THREE_BALL_PATHS[0],
                 drivetrain
             )
         );

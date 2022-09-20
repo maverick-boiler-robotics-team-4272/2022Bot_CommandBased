@@ -6,6 +6,13 @@
   "configurations": [
     {
         "type": "java",
+        "name": "Launch Hello",
+        "request": "launch",
+        "mainClass": "frc.robot.Hello",
+        "projectName": "2022Bot_CommandBased"
+    },
+    {
+        "type": "java",
         "name": "Launch Main",
         "request": "launch",
         "mainClass": "frc.robot.Main",

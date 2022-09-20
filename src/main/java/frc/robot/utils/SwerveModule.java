@@ -25,7 +25,7 @@ public class SwerveModule {
     private static final double DRIVE_P = 0.003596;
     private static final double DRIVE_I = 0.0;
     private static final double DRIVE_D = 0.0;
-    private static final double DRIVE_F = 0.47;
+    private static final double DRIVE_F = 0.6;
 
     private static final double STEER_P = 0.01;
     private static final double STEER_I = 0.0001;
@@ -75,6 +75,7 @@ public class SwerveModule {
 
         // m_driveMotor.burnFlash();
         // m_rotationMotor.burnFlash();
+
         m_id = moduleID;
 
         init();
@@ -141,7 +142,7 @@ public class SwerveModule {
     public SwerveModuleState getState(){
         Rotation2d heading = getHeading();
 
-        return new SwerveModuleState(-m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
+        return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
     }
 
     public void updateRotation(){

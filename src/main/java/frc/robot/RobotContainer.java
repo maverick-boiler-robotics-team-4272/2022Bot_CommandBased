@@ -202,7 +202,9 @@ public class RobotContainer {
      */
     public Command getAutonomousCommand() {
         // An ExampleCommand will run in autonomous
-        return m_autoChooser.getSelected().creator.create(m_shooter, m_intake, m_drivetrain);
+        Paths path = m_autoChooser.getSelected();
+        Constants.Tables.GAME_DATA_TABLE.putString("Selected Path", path.name());
+        return path.creator.create(m_shooter, m_intake, m_drivetrain);
     }
     
     public Climber getClimber(){

@@ -21,20 +21,20 @@ public final class Constants {
     public static final double DEG_TO_RAD = Math.PI / 180.0;
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
 
-    public static final double VOLTAGE_COMPENSATION = 11.0;
+    public static final double VOLTAGE_COMPENSATION = 10.0;
     
     public static final class DrivetrainConstants {
         public static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
 
-        public static final double MAX_LINEAR_SPEED = 4.4; // meters per second
-        public static final double MAX_ANGULAR_SPEED = 4.0 * Math.PI;
-        public static final double MAX_LINEAR_ACC = 4.75;
-        public static final double MAX_ANGULAR_ACC = 1.5 * Math.PI;
+        public static final double MAX_LINEAR_SPEED = 0.75; // meters per second
+        public static final double MAX_ANGULAR_SPEED = 3.0 * Math.PI;
+        public static final double MAX_LINEAR_ACC = 4.75; //4.75
+        public static final double MAX_ANGULAR_ACC = Math.PI * 1.5;//1.5 * Math.PI;
     }
 
     public static final class ShooterConstants {
         public static final double HOOD_DEADZONE = 0.025;
-        public static final double SHOOTER_DEADZONE = 100.0;
+        public static final double SHOOTER_DEADZONE = 50.0;
 
         public enum ShooterPositions{
             //shootAmt, hoodAmt, feedAmt

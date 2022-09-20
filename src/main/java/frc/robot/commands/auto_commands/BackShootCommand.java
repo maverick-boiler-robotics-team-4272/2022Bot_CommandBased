@@ -6,11 +6,13 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
+import static frc.robot.commands.auto_commands.AutoUtils.Trajectories.BACK_SHOOT_PATHS;
+
 public class BackShootCommand extends SequentialCommandGroup {
     public BackShootCommand(Shooter shooter, Intake intake, Drivetrain drivetrain){
         addCommands(
             new PathFollowCommand(
-                AutoUtils.loadPath("ShootNBack"),
+                BACK_SHOOT_PATHS[0],
                 drivetrain
             ),
             new AimShootCommand(shooter, intake, drivetrain)

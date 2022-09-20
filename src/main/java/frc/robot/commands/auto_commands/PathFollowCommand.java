@@ -15,16 +15,17 @@ public class PathFollowCommand extends CommandBase {
 
     private static final ShuffleboardTable m_table = ShuffleboardTable.getTable("Auto Data");
 
-    private static final PIDController DEFAULT_X_PID = new PIDController(0.05, 0.0, 0.0);
-    private static final PIDController DEFAULT_Y_PID = new PIDController(0.05, 0.0, 0.0);
+    public static final PIDController DEFAULT_X_PID = new PIDController(0.01, 0.0, 0.0);
+    public static final PIDController DEFAULT_Y_PID = new PIDController(0.01, 0.0, 0.0);
     // private static final ProfiledPIDController DEFAULT_THETA_PID = new ProfiledPIDController(
     //     0.05, 0.0, 0.0, new TrapezoidProfile.Constraints(Drivetrain.MAX_ANGULAR_SPEED, Drivetrain.MAX_ANGULAR_ACC)
     // );
-    private static final PIDController DEFAULT_THETA_PID = new PIDController(0.3, 0.0, 0.0);
+    public static final PIDController DEFAULT_THETA_PID = new PIDController(.01, 0.0, 0.0);
+
+    private static boolean initted = false;
 
     private final Timer m_timer = new Timer();
     private boolean m_timerPaused = true;
-    private boolean m_stopped = false;
     private final PathPlannerTrajectory m_trajectory;
     private final PIDController m_xPidController;
     private final PIDController m_yPidController;
@@ -68,6 +69,12 @@ public class PathFollowCommand extends CommandBase {
             // ProfiledPIDController thetaPid,
             PIDController thetaPid,
             Drivetrain drivetrain) {
+
+        if(!initted) {
+            DEFAULT_THETA_PID.enableContinuousInput(-Math.PI, Math.PI);
+            initted = true;
+        }
+        
         m_trajectory = trajectory;
         m_drivetrain = drivetrain;
         m_xPidController = xPid;
@@ -96,23 +103,16 @@ public class PathFollowCommand extends CommandBase {
         m_timer.reset();
         m_timer.start();
         m_timerPaused = false;
-        m_stopped = false;
     }
 
     @Override
     @SuppressWarnings("LocalVariableName")
     public void execute() {
         if(m_timerPaused) {
-
-            if(!m_stopped){
-                m_stopped = true;
-                m_drivetrain.drive(0.0, 0.0, 0.0);
-            }
+            m_drivetrain.drive(0.0, 0.0, 0.0);
 
             return;
         }
-
-        if(m_stopped) m_stopped = false;
 
         double curTime = m_timer.get();
         PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(curTime);
@@ -125,6 +125,11 @@ public class PathFollowCommand extends CommandBase {
 
         m_table.putNumber("Pigeon Angle", m_drivetrain.getPigeonHeading().getDegrees());
         m_table.putNumber("Set Angle", desiredPose.getRotation().getDegrees());
+        m_table.putNumber("Current X", currentPose.getX());
+        m_table.putNumber("Set X", desiredPose.getX());
+        m_table.putNumber("Current Y", currentPose.getY());
+        m_table.putNumber("Set Y", desiredPose.getY());
+
 
         m_drivetrain.driveFieldCoords(-xSpeed, ySpeed, thetaSpeed);
     }
@@ -138,7 +143,7 @@ public class PathFollowCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
+        return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds() + 1.5);
     }
 
     public void pauseTimer(){

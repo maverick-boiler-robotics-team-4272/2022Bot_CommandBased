@@ -119,12 +119,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void drive(double xSpeed, double ySpeed, double rotationSpeed){
-        ChassisSpeeds speeds = m_fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(ySpeed, -xSpeed, rotationSpeed, getPigeonHeading())
-                                               : new ChassisSpeeds(ySpeed, -xSpeed, rotationSpeed);
-        
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
-        setSwerveModuleStates(states);
-        updateOdometry();
+        driveFieldCoords(ySpeed, -xSpeed, rotationSpeed);
     }
 
     public void driveFieldCoords(double xSpeed, double ySpeed, double rotationSpeed){
@@ -132,6 +127,7 @@ public class Drivetrain extends SubsystemBase {
                                                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_LINEAR_SPEED);
         setSwerveModuleStates(states);
         updateOdometry();
     }

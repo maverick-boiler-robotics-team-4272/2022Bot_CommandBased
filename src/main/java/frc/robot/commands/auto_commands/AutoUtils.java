@@ -23,9 +23,25 @@ public class AutoUtils {
         CommandGroupBase create(Shooter shooter, Intake intake, Drivetrain drivetrain);
     }
 
+    public static class Trajectories {
+        public static final PathPlannerTrajectory[] BACK_SHOOT_PATHS = {
+            AutoUtils.loadPath("ShootNBack")
+        };
+
+        public static final PathPlannerTrajectory[] TUNE_PATHS = {
+            AutoUtils.loadPath("TunePath")
+        };
+
+        public static final PathPlannerTrajectory[] THREE_BALL_PATHS = {
+            AutoUtils.loadPath("ThreeBall")
+        };
+    }
+
     public enum Paths {
         BACK_N_SHOOT(BackShootCommand::new),
-        TUNE_PATH(TuneAutoCommand::new);
+        TUNE_PATH(TuneAutoCommand::new),
+        THREE_BALL(ThreeBallCommand::new),
+        SHOWOFF(ShowoffCommand::new);
 
         public final AutoCreator creator;
         private Paths(AutoCreator creator){
