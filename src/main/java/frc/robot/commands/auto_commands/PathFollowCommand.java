@@ -20,7 +20,7 @@ public class PathFollowCommand extends CommandBase {
     // private static final ProfiledPIDController DEFAULT_THETA_PID = new ProfiledPIDController(
     //     0.05, 0.0, 0.0, new TrapezoidProfile.Constraints(Drivetrain.MAX_ANGULAR_SPEED, Drivetrain.MAX_ANGULAR_ACC)
     // );
-    public static final PIDController DEFAULT_THETA_PID = new PIDController(.01, 0.0, 0.0);
+    public static final PIDController DEFAULT_THETA_PID = new PIDController(0.01, 0.0, 0.0);
 
     private static boolean initted = false;
 
@@ -129,6 +129,9 @@ public class PathFollowCommand extends CommandBase {
         m_table.putNumber("Set X", desiredPose.getX());
         m_table.putNumber("Current Y", currentPose.getY());
         m_table.putNumber("Set Y", desiredPose.getY());
+        m_table.putNumber("Move X", xSpeed);
+        m_table.putNumber("Move Y", ySpeed);
+        m_table.putNumber("Move Angle", thetaSpeed);
 
 
         m_drivetrain.driveFieldCoords(-xSpeed, ySpeed, thetaSpeed);

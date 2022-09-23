@@ -94,13 +94,6 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.burnFlash();
         m_shooterFollowerMotor.burnFlash();
 
-        SHOOTER_TABLE.putNumber("Hood Position", 0.0);
-        SHOOTER_TABLE.putNumber("Flywheel Speed", 0.0);
-        SHOOTER_TABLE.putData("Push Data", new InstantCommand(() -> {
-            setShooter(SHOOTER_TABLE.getNumber("Flywheel Speed"), SHOOTER_TABLE.getNumber("Hood Position"), -0.8);
-        }));
-
-        SHOOTER_TABLE.putData("Run Shooter", new ShootCommand(this, m_intake));
     }
 
     /**
@@ -282,11 +275,5 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.restoreFactoryDefaults(true);
         m_shooterFollowerMotor.restoreFactoryDefaults(true);
 
-    }
-
-    @Override
-    public void periodic() {
-        SHOOTER_TABLE.putNumber("Hood Actual Position", m_hoodMotor.getEncoder().getPosition());
-        SHOOTER_TABLE.putNumber("Hood Current", m_hoodMotor.getOutputCurrent());
     }
 }

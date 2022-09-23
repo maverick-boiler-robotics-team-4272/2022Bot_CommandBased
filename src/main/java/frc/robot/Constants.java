@@ -26,15 +26,13 @@ public final class Constants {
     public static final class DrivetrainConstants {
         public static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
 
-        public static final double MAX_LINEAR_SPEED = 0.75; // meters per second
-        public static final double MAX_ANGULAR_SPEED = 3.0 * Math.PI;
-        public static final double MAX_LINEAR_ACC = 4.75; //4.75
-        public static final double MAX_ANGULAR_ACC = Math.PI * 1.5;//1.5 * Math.PI;
+        public static final double MAX_SPEED = 2.0; // meters per second
+        public static final double MAX_ACCELERATION = 1.5; //4.75
     }
 
     public static final class ShooterConstants {
         public static final double HOOD_DEADZONE = 0.025;
-        public static final double SHOOTER_DEADZONE = 50.0;
+        public static final double SHOOTER_DEADZONE = 75.0;
 
         public enum ShooterPositions{
             //shootAmt, hoodAmt, feedAmt
@@ -84,6 +82,23 @@ public final class Constants {
     public static final class ClimberConstants {
         public static final float CLIMBER_SOFTLIMIT = -305.0f;
         public static final int CURRENT_LIMIT = 40;
+    }
+
+    public static final class ModuleConstants {
+        public static final double WHEEL_RADIUS = 2.0;
+        public static final double DRIVE_RATIO = 6.75;
+        public static final double STEER_RATIO = 150.0 / 7.0;
+        public static final double MODULE_ROTATION_DEADZONE = 4.0;
+    
+        public static final double DRIVE_P = 0.003596;
+        public static final double DRIVE_I = 0.0;
+        public static final double DRIVE_D = 0.0;
+        public static final double DRIVE_F = 0.6;
+    
+        public static final double STEER_P = 0.01;
+        public static final double STEER_I = 0.0001;
+        public static final double STEER_D = 0.0;
+        public static final double STEER_F = 0.0;
     }
 
     public static final class Tables {

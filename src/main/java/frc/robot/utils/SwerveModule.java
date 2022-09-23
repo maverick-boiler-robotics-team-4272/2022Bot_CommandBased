@@ -8,29 +8,17 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.Tables.MODULE_TABLE;
+import static frc.robot.Constants.ModuleConstants.*;
+import static frc.robot.Constants.DrivetrainConstants.MAX_ACCELERATION;
 
 public class SwerveModule {
-
-    private static final double WHEEL_RADIUS = 2.0;
-    private static final double DRIVE_RATIO = 6.75;
-    private static final double STEER_RATIO = 150.0 / 7.0;
-    private static final double MODULE_ROTATION_DEADZONE = 4.0;
-
-    private static final double DRIVE_P = 0.003596;
-    private static final double DRIVE_I = 0.0;
-    private static final double DRIVE_D = 0.0;
-    private static final double DRIVE_F = 0.6;
-
-    private static final double STEER_P = 0.01;
-    private static final double STEER_I = 0.0001;
-    private static final double STEER_D = 0.0;
-    private static final double STEER_F = 0.0;
 
     private CANSparkMax m_driveMotor;
     private RelativeEncoder m_driveEncoder;
@@ -42,6 +30,7 @@ public class SwerveModule {
     private CANCoder m_externalRotationEncoder;
     private final double m_flipped;
     private final int m_id;
+    private final SlewRateLimiter m_limiter = new SlewRateLimiter(MAX_ACCELERATION);
 
     /**
      * 
@@ -127,8 +116,15 @@ public class SwerveModule {
     public void setState(SwerveModuleState desiredState){
         SwerveModuleState state = optimize(desiredState, getHeading());
 
-        m_drivePidController.setReference(Units.metersToInches(state.speedMetersPerSecond)
-        * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO, ControlType.kVelocity);
+        double speed = Units.metersToInches(state.speedMetersPerSecond) * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO;
+
+        if(speed != 0)
+            speed = m_limiter.calculate(speed);
+        else m_limiter.reset(0.0);
+        
+        m_drivePidController.setReference(speed, ControlType.kVelocity);
+
+
 
         if(state.speedMetersPerSecond != 0.0){
             m_rotationPidController.setReference(state.angle.getDegrees(), ControlType.kPosition);
@@ -142,7 +138,7 @@ public class SwerveModule {
     public SwerveModuleState getState(){
         Rotation2d heading = getHeading();
 
-        return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
+        return new SwerveModuleState(-m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
     }
 
     public void updateRotation(){

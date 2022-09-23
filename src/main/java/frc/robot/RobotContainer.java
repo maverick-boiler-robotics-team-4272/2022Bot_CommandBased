@@ -117,11 +117,15 @@ public class RobotContainer {
         driveLeftStick.setPowerScaling(3.0);
         driveRightStick.setPowerScaling(2.5);
 
-        driveLeftStick.or(driveRightStick)
-                    .whileActiveContinuous(
-                        new DriveCommand(m_drivetrain, driveLeftStick::getDeadzonedX, driveLeftStick::getDeadzonedY, driveRightStick::getDeadzonedX)
-                    );
+        // driveLeftStick.or(driveRightStick)
+        //             .whileActiveContinuous(
+        //                 new DriveCommand(m_drivetrain, driveLeftStick::getDeadzonedX, driveLeftStick::getDeadzonedY, driveRightStick::getDeadzonedX)
+        //             );
         
+        m_drivetrain.setDefaultCommand(
+           new DriveCommand(m_drivetrain, driveLeftStick::getDeadzonedX, driveLeftStick::getDeadzonedY, driveRightStick::getDeadzonedX)
+        );
+
         m_driveController.getButton(Buttons.START_BUTTON)
                         .whenPressed(
                             new InstantCommand(m_drivetrain::toggleFieldRelative, m_drivetrain)

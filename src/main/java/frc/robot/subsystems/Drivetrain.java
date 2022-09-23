@@ -127,7 +127,7 @@ public class Drivetrain extends SubsystemBase {
                                                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_LINEAR_SPEED);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_SPEED);
         setSwerveModuleStates(states);
         updateOdometry();
     }

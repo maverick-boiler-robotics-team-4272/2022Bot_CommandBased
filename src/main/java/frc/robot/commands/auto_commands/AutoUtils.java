@@ -16,7 +16,7 @@ public class AutoUtils {
     }
 
     public static PathPlannerTrajectory loadPath(String name){
-        return PathPlanner.loadPath(name, MAX_LINEAR_SPEED, MAX_ANGULAR_SPEED);
+        return PathPlanner.loadPath(name, MAX_SPEED, MAX_ACCELERATION);
     }
 
     public static interface AutoCreator {
@@ -40,9 +40,7 @@ public class AutoUtils {
     public enum Paths {
         BACK_N_SHOOT(BackShootCommand::new),
         TUNE_PATH(TuneAutoCommand::new),
-        THREE_BALL(ThreeBallCommand::new),
-        SHOWOFF(ShowoffCommand::new);
-
+        THREE_BALL(ThreeBallCommand::new);
         public final AutoCreator creator;
         private Paths(AutoCreator creator){
             this.creator = creator;

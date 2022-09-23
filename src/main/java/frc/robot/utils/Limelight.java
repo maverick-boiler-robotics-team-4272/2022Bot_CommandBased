@@ -133,20 +133,11 @@ public class Limelight {
      * Initial setup of the dashboard
      */
     static public void setupDashboard(){
-        SHOOTER_TABLE.putNumber("Phi A", PHI_A).withPosition(0, 0);
-        SHOOTER_TABLE.putNumber("Phi B", PHI_B).withPosition(0, 1);
-        SHOOTER_TABLE.putNumber("Phi C", PHI_C).withPosition(0, 2);
-
-        SHOOTER_TABLE.putNumber("Theta A", THETA_A).withPosition(1, 0);
-        SHOOTER_TABLE.putNumber("Theta B", THETA_B).withPosition(1, 1);
-        SHOOTER_TABLE.putNumber("Theta C", THETA_C).withPosition(1, 2);
-
-        SHOOTER_TABLE.putNumber("Omega A", OMEGA_A).withPosition(2, 0);
-        SHOOTER_TABLE.putNumber("Omega B", OMEGA_B).withPosition(2, 1);
-        SHOOTER_TABLE.putNumber("Omega C", OMEGA_C).withPosition(2, 2);
-
         SHOOTER_TABLE.putData("Update", new InstantCommand(Limelight::updateCalibration)).withPosition(1, 3);
 
-        SHOOTER_TABLE.putNumber("Phi", getTY()).withPosition(4, 0);
+        SHOOTER_TABLE.putNumber("Phi", getTY());
+
+        SHOOTER_TABLE.putData("Hood Calibration", hoodCalibration);
+        SHOOTER_TABLE.putData("Speed Calibration", speedCalibration);
     }
 }
