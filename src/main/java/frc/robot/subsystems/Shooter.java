@@ -8,9 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.commands.ShootCommand;
 
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.ShooterConstants.*;
@@ -228,7 +226,7 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.restoreFactoryDefaults(true);
         m_shooterFollowerMotor.restoreFactoryDefaults(true);
 
-        this.m_hoodMotor.getEncoder().setPositionConversionFactor(1);
+        m_hoodMotor.getEncoder().setPositionConversionFactor(1);
 
         m_hoodPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, 0);
         
@@ -275,5 +273,11 @@ public class Shooter extends SubsystemBase {
         m_shooterMotor.restoreFactoryDefaults(true);
         m_shooterFollowerMotor.restoreFactoryDefaults(true);
 
+    }
+
+    @Override
+    public void periodic() {
+        SHOOTER_TABLE.putNumber("Shooter Setpoint", m_shooterAmt);
+        SHOOTER_TABLE.putNumber("Shooter Current", m_shooterMotor.getEncoder().getVelocity());
     }
 }

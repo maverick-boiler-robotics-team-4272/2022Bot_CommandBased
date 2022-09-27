@@ -113,20 +113,8 @@ public class Limelight {
      * Updates the calibration values with values from Shuffleboard
      */
     static public void updateCalibration(){
-        PHI_A = SHOOTER_TABLE.getNumber("Phi A");
-        PHI_B = SHOOTER_TABLE.getNumber("Phi B");
-        PHI_C = SHOOTER_TABLE.getNumber("Phi C");
-
-        THETA_A = SHOOTER_TABLE.getNumber("Theta A");
-        THETA_B = SHOOTER_TABLE.getNumber("Theta B");
-        THETA_C = SHOOTER_TABLE.getNumber("Theta C");
-
-        OMEGA_A = SHOOTER_TABLE.getNumber("Omega A");
-        OMEGA_B = SHOOTER_TABLE.getNumber("Omega B");
-        OMEGA_C = SHOOTER_TABLE.getNumber("Omega C");
-
-        hoodCalibration.setValues(PHI_A, PHI_B, PHI_C, THETA_A, THETA_B, THETA_C);
-        speedCalibration.setValues(PHI_A, PHI_B, PHI_C, OMEGA_A, OMEGA_B, OMEGA_C);
+        hoodCalibration.computeCoefficients();
+        speedCalibration.computeCoefficients();
     }
 
     /**

@@ -21,7 +21,7 @@ public final class Constants {
     public static final double DEG_TO_RAD = Math.PI / 180.0;
     public static final double RAD_TO_DEG = 180.0 / Math.PI;
 
-    public static final double VOLTAGE_COMPENSATION = 10.0;
+    public static final double VOLTAGE_COMPENSATION = 11.0;
     
     public static final class DrivetrainConstants {
         public static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);

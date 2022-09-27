@@ -28,6 +28,8 @@ public class SwerveModule {
     private SparkMaxPIDController m_rotationPidController;
     private double m_offset;
     private CANCoder m_externalRotationEncoder;
+    private double m_prevSpeed = 0;
+
     private final double m_flipped;
     private final int m_id;
     private final SlewRateLimiter m_limiter = new SlewRateLimiter(MAX_ACCELERATION);
@@ -118,10 +120,12 @@ public class SwerveModule {
 
         double speed = Units.metersToInches(state.speedMetersPerSecond) * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO;
 
-        if(speed != 0)
+        if(Math.signum(speed) == Math.signum(m_prevSpeed)){
             speed = m_limiter.calculate(speed);
-        else m_limiter.reset(0.0);
-        
+        } else {
+            m_limiter.reset(0.0);
+        }
+
         m_drivePidController.setReference(speed, ControlType.kVelocity);
 
 
@@ -129,6 +133,8 @@ public class SwerveModule {
         if(state.speedMetersPerSecond != 0.0){
             m_rotationPidController.setReference(state.angle.getDegrees(), ControlType.kPosition);
         }
+
+        m_prevSpeed = speed;
     }
 
     /**
@@ -138,7 +144,7 @@ public class SwerveModule {
     public SwerveModuleState getState(){
         Rotation2d heading = getHeading();
 
-        return new SwerveModuleState(-m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
+         return new SwerveModuleState(-m_driveEncoder.getVelocity(), new Rotation2d(-heading.getRadians()));
     }
 
     public void updateRotation(){

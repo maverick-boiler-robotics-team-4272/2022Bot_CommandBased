@@ -1,0 +1,17 @@
+Drive Controls:
+    Left Stick - driving
+    Right stick - rotation
+    Aim and Shoot - Left Trigger
+    Digital Intake - Right Bumper
+    Reset Forward Direction - B
+    Zero Hood - Left Middle Button
+
+Setup:
+    Enable Robot
+    Rotate Robot to face forward
+    Reset Robot Direction
+    Immediately after, Zero Hood
+    Hit up on the D-pad
+    Test Limelight (Tap Left Trigger) 
+        Limelight will turn off or flash
+    Re-Zero Hood
