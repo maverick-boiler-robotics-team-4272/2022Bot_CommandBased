@@ -11,7 +11,7 @@ import static frc.robot.Constants.Tables.TESTING_TABLE;
 
 public class AimShootCommand extends ShootCommand {
 
-    private static final PIDController DEFAULT_CONTROLLER = new PIDController(0.0025, 0.0, 0.0);
+    private static final PIDController DEFAULT_CONTROLLER = new PIDController(0.15, 0.0, 0.0);
 
 
     private Drivetrain m_drivetrain;

@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -16,7 +15,6 @@ import edu.wpi.first.math.util.Units;
 import static frc.robot.Constants.*;
 import static frc.robot.Constants.Tables.MODULE_TABLE;
 import static frc.robot.Constants.ModuleConstants.*;
-import static frc.robot.Constants.DrivetrainConstants.MAX_ACCELERATION;
 
 public class SwerveModule {
 
@@ -28,11 +26,9 @@ public class SwerveModule {
     private SparkMaxPIDController m_rotationPidController;
     private double m_offset;
     private CANCoder m_externalRotationEncoder;
-    private double m_prevSpeed = 0;
 
     private final double m_flipped;
     private final int m_id;
-    private final SlewRateLimiter m_limiter = new SlewRateLimiter(MAX_ACCELERATION);
 
     /**
      * 
@@ -118,23 +114,15 @@ public class SwerveModule {
     public void setState(SwerveModuleState desiredState){
         SwerveModuleState state = optimize(desiredState, getHeading());
 
-        double speed = Units.metersToInches(state.speedMetersPerSecond) * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO;
+        //double speed = Units.metersToInches(state.speedMetersPerSecond) * 60.0 / (WHEEL_RADIUS * PI2) / DRIVE_RATIO;
 
-        if(Math.signum(speed) == Math.signum(m_prevSpeed)){
-            speed = m_limiter.calculate(speed);
-        } else {
-            m_limiter.reset(0.0);
-        }
-
-        m_drivePidController.setReference(speed, ControlType.kVelocity);
+        m_drivePidController.setReference(state.speedMetersPerSecond, ControlType.kVelocity);
 
 
 
         if(state.speedMetersPerSecond != 0.0){
             m_rotationPidController.setReference(state.angle.getDegrees(), ControlType.kPosition);
         }
-
-        m_prevSpeed = speed;
     }
 
     /**
@@ -169,28 +157,19 @@ public class SwerveModule {
      * @return optimized module state
      */
     private static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
-        boolean inverted = false;
+        double inverted = 1.0;
 
-        double desiredDegrees = desiredState.angle.getDegrees() % 360.0;
-        if(desiredDegrees < 0.0){
-            desiredDegrees += 360.0;
-        }
+        double desiredDegrees = Utils.euclideanModulo(desiredState.angle.getDegrees(), 360.0);
 
         double currentDegrees = currentAngle.getDegrees();
-        double currentMod = currentDegrees % 360.0;
-        if(currentMod < 0.0){
-            currentMod += 360.0;
-        }
+        double currentMod = Utils.euclideanModulo(currentDegrees, 360.0);
 
         if(Math.abs(currentMod - desiredDegrees) > 90.0 && Math.abs(currentMod - desiredDegrees) <= 270.0){
-            inverted = true;
+            inverted = -1.0;
             desiredDegrees -= 180.0;
         }
 
-        double deltaAngle = desiredDegrees - currentMod;
-        if(deltaAngle < 0.0){
-            deltaAngle += 360.0;
-        }
+        double deltaAngle = Utils.euclideanModulo(desiredDegrees - currentMod, 360.0);
 
         double counterClockWiseAngle = deltaAngle;
         double clockWiseAngle = deltaAngle - 360.0;
@@ -201,14 +180,8 @@ public class SwerveModule {
             desiredDegrees = clockWiseAngle;
         }
 
-        double magnitude = desiredState.speedMetersPerSecond;
-
-        if(inverted){
-            magnitude *= -1.0;
-        }
-
         desiredDegrees += currentDegrees;
 
-        return new SwerveModuleState(magnitude, Rotation2d.fromDegrees(desiredDegrees));
+        return new SwerveModuleState(desiredState.speedMetersPerSecond * inverted, Rotation2d.fromDegrees(desiredDegrees));
     }
 }

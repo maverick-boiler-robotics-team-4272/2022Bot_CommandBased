@@ -9,8 +9,8 @@ Drive Controls:
 Setup:
     Enable Robot
     Rotate Robot to face forward
-    Reset Robot Direction
-    Immediately after, Zero Hood
+    Reset Forward Direction (Hit B)
+    Immediately after, Zero Hood (Hit Left Middle Button)
     Hit up on the D-pad
     Test Limelight (Tap Left Trigger) 
         Limelight will turn off or flash

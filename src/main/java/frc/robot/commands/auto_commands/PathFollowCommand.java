@@ -9,18 +9,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.utils.ShuffleboardTable;
 
 public class PathFollowCommand extends CommandBase {
 
-    private static final ShuffleboardTable m_table = ShuffleboardTable.getTable("Auto Data");
-
-    public static final PIDController DEFAULT_X_PID = new PIDController(0.01, 0.0, 0.0);
-    public static final PIDController DEFAULT_Y_PID = new PIDController(0.01, 0.0, 0.0);
+    public static final PIDController DEFAULT_X_PID = new PIDController(0.6, 0.0, 0.0);
+    public static final PIDController DEFAULT_Y_PID = new PIDController(0.6, 0.0, 0.0);
     // private static final ProfiledPIDController DEFAULT_THETA_PID = new ProfiledPIDController(
     //     0.05, 0.0, 0.0, new TrapezoidProfile.Constraints(Drivetrain.MAX_ANGULAR_SPEED, Drivetrain.MAX_ANGULAR_ACC)
     // );
-    public static final PIDController DEFAULT_THETA_PID = new PIDController(0.01, 0.0, 0.0);
+    public static final PIDController DEFAULT_THETA_PID = new PIDController(0.6, 0.0, 0.0);
 
     private static boolean initted = false;
 
@@ -97,7 +94,8 @@ public class PathFollowCommand extends CommandBase {
         PathPlannerState initialState = (PathPlannerState) m_trajectory.sample(0.0);
 
         m_drivetrain.setPigeonHeading(0.0);
-        m_drivetrain.setRobotPose(initialState.poseMeters);
+        m_drivetrain.setRobotPose(AutoUtils.poseFromPathPlannerState(initialState));
+                
         m_drivetrain.setPigeonHeading(initialState.holonomicRotation);
 
         m_timer.reset();
@@ -116,23 +114,12 @@ public class PathFollowCommand extends CommandBase {
 
         double curTime = m_timer.get();
         PathPlannerState desiredState = (PathPlannerState) m_trajectory.sample(curTime);
-        Pose2d desiredPose = new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation);
+        Pose2d desiredPose = AutoUtils.poseFromPathPlannerState(desiredState);
         Pose2d currentPose = m_drivetrain.getRobotPose();
 
         double xSpeed = m_xPidController.calculate(currentPose.getX(), desiredPose.getX());
         double ySpeed = m_yPidController.calculate(currentPose.getY(), desiredPose.getY());
         double thetaSpeed = m_thetaPidController.calculate(m_drivetrain.getPigeonHeading().getRadians(), desiredPose.getRotation().getRadians());
-
-        m_table.putNumber("Pigeon Angle", m_drivetrain.getPigeonHeading().getDegrees());
-        m_table.putNumber("Set Angle", desiredPose.getRotation().getDegrees());
-        m_table.putNumber("Current X", currentPose.getX());
-        m_table.putNumber("Set X", desiredPose.getX());
-        m_table.putNumber("Current Y", currentPose.getY());
-        m_table.putNumber("Set Y", desiredPose.getY());
-        m_table.putNumber("Move X", xSpeed);
-        m_table.putNumber("Move Y", ySpeed);
-        m_table.putNumber("Move Angle", thetaSpeed);
-
 
         m_drivetrain.driveFieldCoords(-xSpeed, ySpeed, thetaSpeed);
     }
@@ -146,7 +133,7 @@ public class PathFollowCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds() + 1.5);
+        return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
     }
 
     public void pauseTimer(){

@@ -2,7 +2,10 @@ package frc.robot.commands.auto_commands;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -16,7 +19,14 @@ public class AutoUtils {
     }
 
     public static PathPlannerTrajectory loadPath(String name){
-        return PathPlanner.loadPath(name, MAX_SPEED, MAX_ACCELERATION);
+        return PathPlanner.loadPath(name, MAX_AUTO_SPEED, MAX_AUTO_ACCELERATION);
+    }
+
+    public static Pose2d poseFromPathPlannerState(PathPlannerState state) {
+        Pose2d pose = state.poseMeters;
+        Rotation2d holoRot = state.holonomicRotation;
+
+        return new Pose2d(pose.getX(), pose.getY(), holoRot);
     }
 
     public static interface AutoCreator {

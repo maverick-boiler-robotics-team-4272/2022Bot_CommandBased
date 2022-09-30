@@ -26,8 +26,11 @@ public final class Constants {
     public static final class DrivetrainConstants {
         public static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
 
-        public static final double MAX_SPEED = 2.0; // meters per second
-        public static final double MAX_ACCELERATION = 1.5; //4.75
+        public static final double MAX_SPEED = 1.0; // meters per second
+        public static final double MAX_ACCELERATION = 0.75; //4.75
+
+        public static final double MAX_AUTO_SPEED = 2.0;
+        public static final double MAX_AUTO_ACCELERATION = 1.5;
     }
 
     public static final class ShooterConstants {
@@ -106,5 +109,6 @@ public final class Constants {
         public static final ShuffleboardTable SHOOTER_TABLE = ShuffleboardTable.getTable("Shooter");
         public static final ShuffleboardTable MODULE_TABLE = ShuffleboardTable.getTable("Modules");
         public static final ShuffleboardTable GAME_DATA_TABLE = ShuffleboardTable.getTable("Game Data");
+        public static final ShuffleboardTable AUTO_DATA_TABLE = ShuffleboardTable.getTable("Auto Data");
     }
 }

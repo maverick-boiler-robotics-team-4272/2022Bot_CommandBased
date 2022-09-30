@@ -48,6 +48,7 @@ public class Drivetrain extends SubsystemBase {
         TESTING_TABLE.putNumber("X Pose", rob.getX());
         TESTING_TABLE.putNumber("Y Pose", rob.getY());
         TESTING_TABLE.putNumber("Theta", rob.getRotation().getDegrees());
+        TESTING_TABLE.putNumber("angle", m_pigeon.getYaw());
     }
     
     /**
