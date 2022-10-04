@@ -120,10 +120,10 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void drive(double xSpeed, double ySpeed, double rotationSpeed){
-        driveFieldCoords(ySpeed, -xSpeed, rotationSpeed);
+        driveFieldCentric(ySpeed, -xSpeed, rotationSpeed);
     }
 
-    public void driveFieldCoords(double xSpeed, double ySpeed, double rotationSpeed){
+    public void driveFieldCentric(double xSpeed, double ySpeed, double rotationSpeed){
         ChassisSpeeds speeds = m_fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getPigeonHeading())
                                                : new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed);
 

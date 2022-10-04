@@ -121,7 +121,7 @@ public class PathFollowCommand extends CommandBase {
         double ySpeed = m_yPidController.calculate(currentPose.getY(), desiredPose.getY());
         double thetaSpeed = m_thetaPidController.calculate(m_drivetrain.getPigeonHeading().getRadians(), desiredPose.getRotation().getRadians());
 
-        m_drivetrain.driveFieldCoords(-xSpeed, ySpeed, thetaSpeed);
+        m_drivetrain.driveFieldCentric(-xSpeed, ySpeed, thetaSpeed);
     }
 
     @Override
