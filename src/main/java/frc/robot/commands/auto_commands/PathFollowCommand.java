@@ -28,6 +28,7 @@ public class PathFollowCommand extends CommandBase {
     private final PIDController m_yPidController;
     // private final ProfiledPIDController m_thetaPidController;
     private final PIDController m_thetaPidController;
+    private final Pose2d m_initialDrivePose;
     private final Drivetrain m_drivetrain;
 
     /**
@@ -65,6 +66,7 @@ public class PathFollowCommand extends CommandBase {
             PIDController yPid,
             // ProfiledPIDController thetaPid,
             PIDController thetaPid,
+            Pose2d initialDrivePose,
             Drivetrain drivetrain) {
 
         if(!initted) {
@@ -77,6 +79,7 @@ public class PathFollowCommand extends CommandBase {
         m_xPidController = xPid;
         m_yPidController = yPid;
         m_thetaPidController = thetaPid;
+        m_initialDrivePose = initialDrivePose;
 
         addRequirements(drivetrain);
     }
@@ -85,18 +88,33 @@ public class PathFollowCommand extends CommandBase {
         PathPlannerTrajectory trajectory,
         Drivetrain drivetrain) {
             this(
-                trajectory, DEFAULT_X_PID, DEFAULT_Y_PID, DEFAULT_THETA_PID, drivetrain    
+                trajectory,
+                AutoUtils.poseFromPathPlannerState((PathPlannerState) trajectory.sample(0.0)),
+                drivetrain    
             );
         }
 
+    public PathFollowCommand(
+        PathPlannerTrajectory trajectory,
+        Pose2d initialPose,
+        Drivetrain drivetrain
+    ) {
+        this(
+            trajectory,
+            DEFAULT_X_PID,
+            DEFAULT_Y_PID,
+            DEFAULT_THETA_PID,
+            initialPose,
+            drivetrain
+        );
+    }
+
     @Override
     public void initialize() {
-        PathPlannerState initialState = (PathPlannerState) m_trajectory.sample(0.0);
-
         m_drivetrain.setPigeonHeading(0.0);
-        m_drivetrain.setRobotPose(AutoUtils.poseFromPathPlannerState(initialState));
+        m_drivetrain.setRobotPose(m_initialDrivePose);
                 
-        m_drivetrain.setPigeonHeading(initialState.holonomicRotation);
+        m_drivetrain.setPigeonHeading(m_initialDrivePose.getRotation());
 
         m_timer.reset();
         m_timer.start();
@@ -119,7 +137,7 @@ public class PathFollowCommand extends CommandBase {
 
         double xSpeed = m_xPidController.calculate(currentPose.getX(), desiredPose.getX());
         double ySpeed = m_yPidController.calculate(currentPose.getY(), desiredPose.getY());
-        double thetaSpeed = m_thetaPidController.calculate(m_drivetrain.getPigeonHeading().getRadians(), desiredPose.getRotation().getRadians());
+        double thetaSpeed = m_thetaPidController.calculate(currentPose.getRotation().getRadians(), -desiredPose.getRotation().getRadians());
 
         m_drivetrain.driveFieldCentric(-xSpeed, ySpeed, thetaSpeed);
     }
