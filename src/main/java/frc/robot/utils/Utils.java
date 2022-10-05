@@ -1,6 +1,11 @@
 package frc.robot.utils;
 
 public class Utils {
+
+    private Utils() {
+        throwUtilityConstructor(this);
+    }
+
     public static double deadzoneEquations(double input, double deadzone){
         if(input >= deadzone){
             return (input - deadzone) / (1.0 - deadzone);
@@ -17,5 +22,9 @@ public class Utils {
 
     public static void noop(){
 
+    }
+
+    public static void throwUtilityConstructor(Object obj) {
+        throw new UnsupportedOperationException(obj.getClass().getName() + " is a utility class");
     }
 }

@@ -47,7 +47,9 @@ public class Limelight {
         }
     }
 
-    private Limelight() {}
+    private Limelight() {
+        Utils.throwUtilityConstructor(this);
+    }
 
     public static void setLEDMode(LEDMode mode){
         m_table.getEntry("ledMode").setDouble(mode.m_mode);
