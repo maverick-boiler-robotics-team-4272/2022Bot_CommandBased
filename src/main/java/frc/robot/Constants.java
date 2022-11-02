@@ -26,9 +26,9 @@ public final class Constants {
     public static final class DrivetrainConstants {
         public static final double WHEEL_DISTANCE = Units.feetToMeters(1.0);
 
-        public static final double MAX_SPEED = 1.0; // meters per second
-        public static final double MAX_LINEAR_ACCELERATION = 0.75; //4.75
-        public static final double MAX_ANGULAR_ACCELERATION =0.75;
+        public static final double MAX_SPEED = 2.0; // meters per second
+        public static final double MAX_LINEAR_ACCELERATION = 1.5; //4.75
+        public static final double MAX_ANGULAR_ACCELERATION = 1.5;
 
         public static final double MAX_AUTO_SPEED = 2.0;
         public static final double MAX_AUTO_ACCELERATION = 1.5;
